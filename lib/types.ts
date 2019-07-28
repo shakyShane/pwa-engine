@@ -17,14 +17,13 @@ export interface EpicDeps<AppEnv = {}> {
         set(key: string, value: any, duration?: number): void;
         remove(key: string): void;
     };
-    apiUrl?(operationId: string): (path: string, args?: { [name: string]: any }) => string;
+    apiUrl(operationId: string): (path: string, args?: { [name: string]: any }) => string;
     postJSON(url: string, body?: any, options?: object): Observable<any>;
     postJSON(url: string, body?: any, options?: object): Observable<any>;
     putJSON(url: string, body?: any, options?: object): Observable<any>;
     deleteJSON(url: string, body?: any, options?: object): Observable<any>;
     getJSON(url: string, options?: object): Observable<any>;
     apiOptions(baseOptions: object): object;
-    cleanPageBuilder?(input: string): string;
     client?: ApolloClient<any>;
     env: AppEnv;
     [index: string]: any;
