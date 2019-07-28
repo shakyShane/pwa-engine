@@ -18,30 +18,25 @@ import { Action } from 'redux';
 
 import { ResolvedComponent, ResolveFn } from '../../utils/resolve';
 import { RuntimeActions, RuntimeMsg, RuntimeState } from '../runtime.register';
+import { SameBaseResolver, EpicDeps } from '../../types';
 
 /**
  * To prevent navigations within the same route component,
  * we can just check if the first segment of the URL matches the previous one
  */
-function isSameBase([prev, next]: [Location, Location]) {
+const isSameBase: SameBaseResolver = ([prev, next]: [Location, Location]) => {
     const prevStripped = prev.pathname.replace(/^\//, '');
     const nextStripped = next.pathname.replace(/^\//, '');
     const [prevBase] = prevStripped.split('/');
     const [nextBase] = nextStripped.split('/');
-
-    // todo(Shane): decide how/where this actually lives (eg: NOT in the runtime)
-    if (nextBase === 'products') {
-        if (next.search === '') {
-            return false;
-        }
-    }
     return prevBase === nextBase;
-}
+};
 
 export function getNavigationHandler(resolveFn: ResolveFn) {
     return function handleNavigation(
         action$: Observable<any>,
         state$: StateObservable<{ runtime: RuntimeState; router: RouterState }>,
+        deps: EpicDeps,
     ): Observable<Action> {
         const online$: Observable<boolean> = state$.pipe(pluck('runtime', 'online'));
         const outdated$: Observable<boolean> = state$.pipe(pluck('runtime', 'outdated'));
@@ -73,14 +68,19 @@ export function getNavigationHandler(resolveFn: ResolveFn) {
         ) as Observable<[Location, Location]>;
 
         /**
+         * Same-base resolvers give a way to skip
+         */
+        const fns = deps.sameBaseResolvers || [isSameBase];
+
+        /**
          * Now split the stream based on whether or not we're
          * rendering the same root component, or a different one.
          *
          * The difference is that when rendering a NEW component type,
          * we want to go through the fade-out/fade-in cycle
          */
-        const isSameBase$ = location$.pipe(filter(isSameBase));
-        const notSameBase$ = location$.pipe(filter(x => !isSameBase(x)));
+        const isSameBase$ = location$.pipe(filter(x => fns.every(fn => fn(x))));
+        const notSameBase$ = location$.pipe(filter(x => fns.some(fn => !fn(x))));
 
         /**
          * Outdated nav actions just trigger a reload

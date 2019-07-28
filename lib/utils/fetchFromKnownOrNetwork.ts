@@ -1,17 +1,17 @@
 import { defer, Observable, of, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { ApolloClient } from 'apollo-client';
-import debugPkg from 'debug';
 
 import { urlEntityToComponentName } from './urlEntityToComponentName';
 import { NOTFOUND_CMP, ResolvedUrl } from './resolve';
 import { getKnownRoute, RouteData } from './getKnownRoute';
-import {UrlQueryInput, UrlQueryResult} from "../types";
+import { UrlQueryInput, UrlQueryResult } from '../types';
+import { createRuntimeDebug } from './runtimeDebug';
 
-const debug = debugPkg('jh-runtime:fetchFromKnownOrNetwork');
+const debug = createRuntimeDebug('fetchFromKnownOrNetwork');
 
 export interface FetchedData {
-    data: {urlResolver: UrlQueryResult};
+    data: { urlResolver: UrlQueryResult };
     urlKey: string;
 }
 
@@ -19,7 +19,7 @@ export function fetchFromKnownOrNetwork(
     urlKey: string,
     client: ApolloClient<any>,
     knownRoutes: RouteData[],
-    query: any
+    query: any,
 ): Observable<FetchedData> {
     /**
      * First try to lookup a known route to avoid hitting
@@ -38,7 +38,7 @@ export function fetchFromKnownOrNetwork(
      * query
      */
     return defer(() => {
-        return client.query<{urlResolver: UrlQueryResult}, UrlQueryInput>({
+        return client.query<{ urlResolver: UrlQueryResult }, UrlQueryInput>({
             query,
             variables: {
                 urlKey,

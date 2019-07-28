@@ -46,7 +46,7 @@ export function createBrowserStore<T extends { [index: string]: any }>(parameter
         },
         apiUrl: (operationId: string) => (path, args) => {
             console.error(`apiUrl not implemented for ${operationId}`, path, args);
-            return "unknown";
+            return 'unknown';
         },
         env: process.env as any, // from webpack
         resolve: (...args) => {

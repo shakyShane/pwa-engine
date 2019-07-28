@@ -3,11 +3,11 @@ import { ignoreElements, share, tap, mergeMap, withLatestFrom } from 'rxjs/opera
 import { Action } from 'redux';
 import { ofType } from 'redux-observable';
 import { LOCATION_CHANGE } from 'connected-react-router';
-import debugPkg from 'debug';
 
 import { RuntimeActions, RuntimeMsg } from '../runtime.register';
+import { createRuntimeDebug } from '../../utils/runtimeDebug';
 
-const debug = debugPkg(`jh-runtime:serviceWorkers.ts`);
+const debug = createRuntimeDebug(`serviceWorkers.ts`);
 
 /**
  * How often should we check for SW updates?

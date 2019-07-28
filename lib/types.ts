@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs';
 import { Action } from 'redux';
 import { ApolloClient } from 'apollo-client';
+import { Location } from 'history';
 
 export type EpicReturn = Observable<Action>;
 
@@ -26,6 +27,7 @@ export interface EpicDeps<AppEnv = {}> {
     apiOptions(baseOptions: object): object;
     client?: ApolloClient<any>;
     env: AppEnv;
+    sameBaseResolvers?: SameBaseResolver[];
     [index: string]: any;
 }
 
@@ -37,12 +39,15 @@ export interface RegisterItem {
 
 export interface UrlQueryResult {
     type: string;
-    id: number | null
-    canonical_url?: string | null
-    redirect_type?: number | null
-    redirect_url?: string | null
-    relative_url?: string | null
+    id: number | null;
+    canonical_url?: string | null;
+    redirect_type?: number | null;
+    redirect_url?: string | null;
+    relative_url?: string | null;
 }
+
 export interface UrlQueryInput {
     urlKey?: string | null;
 }
+
+export type SameBaseResolver = ([prev, next]: [Location, Location]) => boolean;

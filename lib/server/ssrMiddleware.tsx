@@ -5,7 +5,6 @@ import { ApolloLink } from 'apollo-link';
 import { Helmet } from 'react-helmet';
 import { defer, of } from 'rxjs';
 import { take, mergeMap, tap } from 'rxjs/operators';
-import debugPkg from 'debug';
 import { ApolloClient } from 'apollo-client';
 
 import { convertDataToResolved, fetchFromKnownOrNetwork } from '../utils/fetchFromKnownOrNetwork';
@@ -16,8 +15,9 @@ import { renderShell } from './renderShell';
 import { getAssetsForType, getCriticalAssets, getJsEntryPointFilePaths, Stats } from './getCriticalAssets';
 import { createServerApolloClient } from './createServerApolloClient';
 import { getStatusFromErrors } from './getStatusFromErrors';
+import { createRuntimeDebug } from '../utils/runtimeDebug';
 
-const debug = debugPkg('jh-runtime:getSSRMiddleware');
+const debug = createRuntimeDebug('getSSRMiddleware');
 
 export interface GetSsrAppParams {
     client: ApolloClient<any>;

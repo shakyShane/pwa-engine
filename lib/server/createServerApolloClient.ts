@@ -3,11 +3,11 @@ import { createHttpLink } from 'apollo-link-http';
 import { defaultDataIdFromObject, InMemoryCache } from 'apollo-cache-inmemory';
 import { ErrorResponse, onError } from 'apollo-link-error';
 import { ApolloLink, Operation } from 'apollo-link';
-import debugPkg from 'debug';
 
-import {UrlQueryInput, UrlQueryResult} from "../types";
+import { UrlQueryInput, UrlQueryResult } from '../types';
+import { createRuntimeDebug } from '../utils/runtimeDebug';
 
-const debug = debugPkg('createServerApolloClient');
+const debug = createRuntimeDebug('createServerApolloClient');
 
 export enum GqlError {
     NotFound = 'NotFound',
@@ -47,7 +47,7 @@ export function createServerApolloClient(
             switch (operation.operationName) {
                 case 'resolveUrl': {
                     const vars = operation.variables as UrlQueryInput;
-                    const response = data.data as {urlResolver: UrlQueryResult};
+                    const response = data.data as { urlResolver: UrlQueryResult };
                     if (response.urlResolver === null) {
                         errors.push({
                             type: GqlError.NotFound,

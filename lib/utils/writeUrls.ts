@@ -1,6 +1,6 @@
 import { ApolloClient } from 'apollo-client';
 
-import {UrlQueryInput, UrlQueryResult} from "../types";
+import { UrlQueryInput, UrlQueryResult } from '../types';
 
 export interface UrlEntry extends UrlQueryResult {
     urlKey: string;
@@ -12,7 +12,7 @@ export function createWriter(apolloClient: ApolloClient<any>, query: any) {
          * Try to pre-populate urls for navigation items
          */
         urlEntries.forEach(urlEntry => {
-            apolloClient.writeQuery<{urlResolver: UrlQueryResult & {__typename: string}}, UrlQueryInput>({
+            apolloClient.writeQuery<{ urlResolver: UrlQueryResult & { __typename: string } }, UrlQueryInput>({
                 query,
                 data: {
                     urlResolver: {

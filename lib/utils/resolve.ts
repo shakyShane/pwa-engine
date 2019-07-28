@@ -2,15 +2,15 @@ import { defer, EMPTY, Observable, of } from 'rxjs';
 import { catchError, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
 import ApolloClient from 'apollo-client';
 import { JSXElementConstructor } from 'react';
-import debugPkg from 'debug';
 
 import { CreateRunTimeParams } from '../runtime';
 
 import { convertDataToResolved, FetchedData, fetchFromKnownOrNetwork } from './fetchFromKnownOrNetwork';
 import { getKnownRoute } from './getKnownRoute';
-import {UrlQueryInput, UrlQueryResult} from "../types";
+import { UrlQueryInput, UrlQueryResult } from '../types';
+import { createRuntimeDebug } from './runtimeDebug';
 
-const debug = debugPkg(`jh-runtime:resolve`);
+const debug = createRuntimeDebug(`resolve`);
 
 export const NOTFOUND_CMP = 'NotFound';
 export const ERROR_CMP = 'Error';
@@ -136,7 +136,8 @@ export function resolve(params: CreateRunTimeParams, client: ApolloClient<any>) 
 
 export function resolveWeak(params: CreateRunTimeParams, client: ApolloClient<any>) {
     return function resolveWeakInner(urlKey: string, resolveFn: (componentName: string) => any): ResolvedComponent {
-        const knownData = getKnownRoute(urlKey, params.knownRoutes) || syncReadFromApolloClient(client, urlKey, params.urlQuery);
+        const knownData =
+            getKnownRoute(urlKey, params.knownRoutes) || syncReadFromApolloClient(client, urlKey, params.urlQuery);
         const [resolvedData, error] = syncObs(
             convertDataToResolved({ data: { urlResolver: knownData || null }, urlKey }),
         );
@@ -194,7 +195,7 @@ function syncObs<T>(obs$: Observable<T>): [T | undefined, Error | undefined] {
 
 function syncReadFromApolloClient(client: ApolloClient<any>, urlKey: string, query: any): UrlQueryResult | undefined {
     try {
-        const match = client.readQuery<{urlResolver: UrlQueryResult}, UrlQueryInput>({
+        const match = client.readQuery<{ urlResolver: UrlQueryResult }, UrlQueryInput>({
             query,
             variables: {
                 urlKey,

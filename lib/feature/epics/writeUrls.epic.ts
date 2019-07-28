@@ -1,10 +1,5 @@
-import {
-    catchError,
-    ignoreElements,
-    subscribeOn,
-    tap,
-} from 'rxjs/operators';
-import {asyncScheduler, of} from 'rxjs';
+import { catchError, ignoreElements, subscribeOn, tap } from 'rxjs/operators';
+import { asyncScheduler, of } from 'rxjs';
 import { ofType } from 'redux-observable';
 
 import { Actions, RuntimeActions, RuntimeMsg, TypeMap } from '../runtime.register';
@@ -37,5 +32,5 @@ export function createWriteUrlsEpic(writer: (urlEntries: UrlEntry[]) => void) {
                 );
             }),
         );
-    }
+    };
 }

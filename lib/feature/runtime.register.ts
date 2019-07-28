@@ -3,7 +3,7 @@ import { ActionMap, createMsg } from 'action-typed';
 import { ResolvedComponent, ResolveFn } from '../utils/resolve';
 import { UrlEntry } from '../utils/writeUrls';
 
-import {createWriteUrlsEpic} from './epics/writeUrls.epic';
+import { createWriteUrlsEpic } from './epics/writeUrls.epic';
 import { getNavigationHandler } from './epics/handleNavigation';
 import { scrollTopEpic } from './epics/windowScrollTop.epic';
 import { serviceWorkerEpic } from './epics/serviceWorker.epic';
