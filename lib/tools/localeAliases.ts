@@ -32,7 +32,7 @@ export function localeAliases(selectedLocale: string, cwd: string): {[index: str
         .map(f => {
             return {
                 path: f,
-                absolute: resolve(f)
+                absolute: resolve(join(cwd, f))
             }
         })
         .map(({path, absolute}) => {
