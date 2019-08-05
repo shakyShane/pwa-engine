@@ -1,16 +1,16 @@
 {
   "name": "pwa-engine",
-  "version": "1.0.7",
+  "version": "1.0.9",
   "description": "> TODO: description",
   "author": "Shane Osbourne <shane.osbourne8@gmail.com>",
   "homepage": "",
   "license": "ISC",
-  "main": "dist/index.js",
+  "main": "dist/es/index.js",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "cb build",
     "lint": "prettier -l 'lib/**/*'",
     "lint:fix": "prettier 'lib/**/*' --write",
     "prepublishOnly": "npm run build"
