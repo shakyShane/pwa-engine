@@ -30,9 +30,9 @@ export interface GetSsrAppParams {
 export function getSSRMiddleware(parameters: {
     stats: Stats;
     legacyStats: Stats;
-    baseDir: string;
+    assetPrefix: string;
+    legacyAssetPrefix: string;
     distDir: string;
-    legacyDir: string;
     backend: string;
     domain: string;
     version: string;
@@ -46,11 +46,9 @@ export function getSSRMiddleware(parameters: {
     let {
         stats,
         legacyStats,
-        baseDir,
         backend,
         domain,
         distDir,
-        legacyDir,
         version,
         afterBodyStart,
         beforeBodyEnd,
@@ -58,11 +56,12 @@ export function getSSRMiddleware(parameters: {
         knownRoutes,
         links,
         urlQuery,
+        assetPrefix,
+        legacyAssetPrefix
     } = parameters;
-    const criticalAssets = getCriticalAssets(stats, join(baseDir, distDir));
+    const criticalAssets = getCriticalAssets(stats, distDir);
     const noneCriticalJs = getJsEntryPointFilePaths(stats);
 
-    // const legacyCriticalAssets = getCriticalAssets(legacyStats, join(baseDir, distDir + '-ie'));
     const legacyNoneCriticalJs = getJsEntryPointFilePaths(legacyStats);
 
     return function(req, res, next) {
@@ -105,11 +104,11 @@ export function getSSRMiddleware(parameters: {
                                 content: content,
                                 state: initialState,
                                 criticalCss: criticalAssets.css,
-                                css: assetsForType.css.map(x => join(distDir, x)),
-                                js: assetsForType.js.concat(noneCriticalJs).map(x => join(distDir, x)),
+                                css: assetsForType.css.map(x => join(assetPrefix, x)),
+                                js: assetsForType.js.concat(noneCriticalJs).map(x => join(assetPrefix, x)),
                                 legacyJs: legacyNoneCriticalJs
                                     .concat(legacyAssetsForType.js)
-                                    .map(x => join(legacyDir, x)),
+                                    .map(x => join(legacyAssetPrefix, x)),
                                 title: helmet.title.toString(),
                                 link: helmet.link.toString(),
                                 meta: helmet.meta.toString(),
