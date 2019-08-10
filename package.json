@@ -10,10 +10,10 @@
     "dist"
   ],
   "scripts": {
-    "build": "cb build",
+    "build": "tsc",
     "lint": "prettier -l 'lib/**/*'",
     "lint:fix": "prettier 'lib/**/*' --write",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "tsc"
   },
   "devDependencies": {
     "@types/react": "16.8.23",

@@ -1,4 +1,0 @@
-tasks:
-    build:
-        - '@npm tsc --module es2015 --outDir dist/es'
-        - '@npm tsc --module commonjs --outDir dist/commonjs'
