@@ -1,5 +1,5 @@
-const { existsSync } = require("fs");
-const { resolve, basename, dirname, join } = require("path");
+const { existsSync } = require('fs');
+const { resolve, basename, dirname, join } = require('path');
 
 const DEFAULT_LOCALE = 'en';
 const FILE_TYPE = 'yaml';
@@ -20,33 +20,32 @@ const FILE_TYPE = 'yaml';
  * @param selectedLocale
  * @param cwd
  */
-export function localeAliases(selectedLocale: string, cwd: string): {[index: string]: string} {
-
+export function localeAliases(selectedLocale: string, cwd: string): { [index: string]: string } {
     if (selectedLocale === DEFAULT_LOCALE) return {};
 
-    const glob = require("glob");
+    const glob = require('glob');
 
-    const files = glob.sync(`**/*.${DEFAULT_LOCALE}.i18n.${FILE_TYPE}`, {cwd});
+    const files = glob.sync(`**/*.${DEFAULT_LOCALE}.i18n.${FILE_TYPE}`, { cwd });
 
     return files
         .map(f => {
             return {
                 path: f,
-                absolute: resolve(join(cwd, f))
-            }
+                absolute: resolve(join(cwd, f)),
+            };
         })
-        .map(({path, absolute}) => {
+        .map(({ path, absolute }) => {
             const [name] = basename(absolute).split('.');
             const dir = dirname(absolute);
             const nextFile = join(dir, [name, selectedLocale, 'i18n', FILE_TYPE].join('.'));
             return {
                 path,
                 absolute,
-                nextFile
-            }
+                nextFile,
+            };
         })
         .filter(x => {
-            return existsSync(x.nextFile)
+            return existsSync(x.nextFile);
         })
         .reduce((acc, item) => {
             acc[item.absolute] = item.nextFile;

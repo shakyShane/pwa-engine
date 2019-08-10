@@ -12,7 +12,12 @@ export type Stats = {
     };
 };
 
-export function getCriticalAssets(stats: Stats, base: string): { js: string; css: string } {
+export type CriticalAssets = {
+    js: string;
+    css: string;
+};
+
+export function getCriticalAssets(stats: Stats, base: string): CriticalAssets {
     const css = dlv(stats, ['client', 'assets'], []).filter(x => x.match(/\.css$/));
     const js = dlv(stats, ['client', 'assets'], []).filter(x => x.match(/runtime~client-(.+?)\.js$/));
 

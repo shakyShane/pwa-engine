@@ -12,7 +12,13 @@ import { ResolvedUrl } from '../utils/resolve';
 import { RouteData } from '../';
 
 import { renderShell } from './renderShell';
-import { getAssetsForType, getCriticalAssets, getJsEntryPointFilePaths, Stats } from './getCriticalAssets';
+import {
+    CriticalAssets,
+    getAssetsForType,
+    getCriticalAssets,
+    getJsEntryPointFilePaths,
+    Stats,
+} from './getCriticalAssets';
 import { createServerApolloClient } from './createServerApolloClient';
 import { getStatusFromErrors } from './getStatusFromErrors';
 import { createRuntimeDebug } from '../utils/runtimeDebug';
@@ -42,6 +48,7 @@ export function getSSRMiddleware(parameters: {
     knownRoutes: RouteData[];
     links: ApolloLink[];
     urlQuery: any;
+    errorHtml(params: { criticalAssets: CriticalAssets; error: Error }): string;
 }) {
     let {
         stats,
@@ -57,7 +64,8 @@ export function getSSRMiddleware(parameters: {
         links,
         urlQuery,
         assetPrefix,
-        legacyAssetPrefix
+        legacyAssetPrefix,
+        errorHtml,
     } = parameters;
     const criticalAssets = getCriticalAssets(stats, distDir);
     const noneCriticalJs = getJsEntryPointFilePaths(stats);
@@ -136,33 +144,7 @@ export function getSSRMiddleware(parameters: {
                     console.error(e);
 
                     res.status(500);
-                    res.send(`<html>
-                <head>
-                    <title>An error occurred</title>
-                    <style>
-                        ${criticalAssets.css}
-                    </style>
-                </head>
-<body>
-<div class="well">
-    <div class="container">
-        <h1>An error occurred</h1>
-        <p>
-            Please try again later
-        </p>
-    </div>
-</div>
-<div class="wrapper">
-    <div class="container">
-<details>
-    <summary>Show error</summary>
-    <pre><code>${e}</code></pre>
-    <pre><code>${e.stack}</code></pre>
-</details>
-</div>
-</div>
-</body>
-</html>`);
+                    res.send(errorHtml({ criticalAssets, error: e }));
                 },
             });
     };
