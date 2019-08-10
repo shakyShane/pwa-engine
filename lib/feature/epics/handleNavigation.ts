@@ -1,4 +1,4 @@
-import { Observable, of, concat, merge, asyncScheduler } from 'rxjs';
+import { Observable, of, concat, merge, asyncScheduler, EMPTY } from 'rxjs';
 import { ofType, StateObservable } from 'redux-observable';
 import { LOCATION_CHANGE, LocationChangeAction, RouterState } from 'connected-react-router';
 import {
@@ -97,19 +97,23 @@ export function getNavigationHandler(resolveFn: ResolveFn) {
                 }),
             ),
             notSameBase$.pipe(
+                withLatestFrom(deps.window$),
                 switchMap(
-                    ([, location]): Observable<Action> => {
+                    ([[, location], window]): Observable<Action> => {
                         const scrollTo = location.state && location.state.scrollTo ? location.state.scrollTo : 'body';
+                        const scrollY = window.scrollY;
 
                         return concat(
                             of(RuntimeMsg(RuntimeActions.SetResolving, true)),
-                            of(RuntimeMsg(RuntimeActions.ScrollTop, { duration: 300, selector: scrollTo })).pipe(
-                                delay(300),
-                            ),
+                            scrollY > 10
+                                ? of(RuntimeMsg(RuntimeActions.ScrollTop, { duration: 300, selector: scrollTo }))
+                                : EMPTY,
                             resolveFn(location.pathname, online$, outdated$).pipe(
                                 mergeMap((output: ResolvedComponent) => {
                                     return concat(
-                                        of(RuntimeMsg(RuntimeActions.SetResolve, output)).pipe(delay(300)),
+                                        of(RuntimeMsg(RuntimeActions.SetResolve, output)).pipe(
+                                            delay(scrollY > 10 ? 300 : 0),
+                                        ),
                                         of(RuntimeMsg(RuntimeActions.SetResolving, false)).pipe(
                                             subscribeOn(asyncScheduler),
                                         ),
@@ -125,7 +129,7 @@ export function getNavigationHandler(resolveFn: ResolveFn) {
                     const scrollTo = location.state && location.state.scrollTo ? location.state.scrollTo : 'body';
 
                     return concat(
-                        of(RuntimeMsg(RuntimeActions.ScrollTop, { duration: 300, selector: scrollTo })),
+                        of(RuntimeMsg(RuntimeActions.ScrollTop, { duration: 0, selector: scrollTo })),
                         resolveFn(location.pathname, online$, outdated$).pipe(
                             mergeMap((output: ResolvedComponent) => {
                                 return concat(
