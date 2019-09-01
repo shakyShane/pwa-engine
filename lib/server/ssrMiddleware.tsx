@@ -1,6 +1,6 @@
 import { join } from 'path';
 
-import { renderToStringWithData } from 'react-apollo';
+import { renderToStringWithData } from '@apollo/react-ssr';
 import { ApolloLink } from 'apollo-link';
 import { Helmet } from 'react-helmet';
 import { defer, of } from 'rxjs';

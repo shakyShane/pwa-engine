@@ -20,7 +20,7 @@
     "typescript": "3.5.3",
     "action-typed": "2.0.0",
     "apollo-cache-inmemory": "1.6.2",
-    "apollo-client": "2.6.3",
+    "apollo-client": "2.6.4",
     "apollo-link": "1.2.12",
     "apollo-link-error": "1.1.11",
     "apollo-link-http": "1.5.15",
@@ -44,7 +44,7 @@
   "peerDependencies": {
     "action-typed": "2.0.0",
     "apollo-cache-inmemory": "1.6.2",
-    "apollo-client": "2.6.3",
+    "apollo-client": "2.6.4",
     "apollo-link": "1.2.12",
     "apollo-link-error": "1.1.11",
     "apollo-link-http": "1.5.15",
@@ -66,6 +66,7 @@
     "zenscroll": "4.0.2"
   },
   "dependencies": {
+    "@apollo/react-ssr": "^3.0.1",
     "classnames": "2.2.6",
     "prettier": "1.18.2"
   }
