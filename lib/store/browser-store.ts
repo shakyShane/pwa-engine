@@ -75,7 +75,7 @@ export function createBrowserStore<T extends { [index: string]: any }>(parameter
         return acc;
     }, {});
 
-    const [store, register] = configureStore({
+    const [store, register, registerEpic] = configureStore({
         history,
         epics: epics as any,
         deps: epicDeps,
@@ -97,6 +97,7 @@ export function createBrowserStore<T extends { [index: string]: any }>(parameter
         storage,
         store,
         register,
+        registerEpic,
         epicDeps,
     };
 }

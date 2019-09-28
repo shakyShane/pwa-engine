@@ -17,9 +17,12 @@ type ConfigureStoreParams<State, EpicDeps> = {
     initialReducers?: { [index: string]: (...args: any[]) => any };
 };
 
+export type RegisterEpicFn = (action$: Observable<any>, state$?: Observable<any>, deps?: any) => Observable<any>;
+export type RegisterEpicApi = (fn: RegisterEpicFn, ctxName?: string) => void;
+
 export function configureStore<StoreState, EpicDeps>(
     parameters: ConfigureStoreParams<StoreState, EpicDeps>,
-): [any, (item: RegisterItem | RegisterItem[]) => void] {
+): [any, (item: RegisterItem | RegisterItem[]) => void, RegisterEpicApi] {
     let { history, epics = [], deps = {}, compose, initialState = {}, initialReducers = {} } = parameters;
     const registered: string[] = [];
     const dependencies: Partial<EpicDeps> = {
@@ -92,6 +95,11 @@ export function configureStore<StoreState, EpicDeps>(
 
     epicMiddleware.run(rootEpic as any);
 
+    function registerEpic(fn: RegisterEpicFn, ctxName?: string) {
+        debug('registerEpic -> fn', ctxName || fn.name || 'unknown');
+        epic$.next(fn);
+    }
+
     function register(items: RegisterItem | RegisterItem[]): void {
         []
             .concat(items as any)
@@ -113,5 +121,5 @@ export function configureStore<StoreState, EpicDeps>(
             });
     }
 
-    return [store, register];
+    return [store, register, registerEpic];
 }
