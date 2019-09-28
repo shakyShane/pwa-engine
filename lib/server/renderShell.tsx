@@ -49,29 +49,9 @@ export function renderShell(props: HtmlProps) {
             VERSION: props.version,
             DOMAIN: props.domain,
         })}</script>
-        <script type="module">  
-            (function() {
-              var check = document.createElement('script');
-              if (!('noModule' in check) && 'onbeforeload' in check) {
-                var support = false;
-                document.addEventListener('beforeload', function(e) {
-                  if (e.target === check) {
-                    support = true;
-                  } else if (!e.target.hasAttribute('nomodule') || !support) {
-                    return;
-                  }
-                  e.preventDefault();
-                }, true);
-            
-                check.type = 'module';
-                check.src = '.';
-                document.head.appendChild(check);
-                check.remove();
-              }
-            }());
-        </script>
+        <script type="module">window.__moduleSupport = true;</script>
         ${props.js.map(x => `<script type="module" src="/${x}"></script>`).join('')}
-        ${props.legacyJs.map(x => `<script nomodule src="/${x}"></script>`).join('')}
+        ${props.legacyJs.map(x => `<script nomodule async defer src="/${x}"></script>`).join('')}
         ${props.beforeBodyEnd}
     </body>
 </html>
