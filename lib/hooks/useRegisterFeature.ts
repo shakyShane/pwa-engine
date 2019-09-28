@@ -24,7 +24,8 @@ export function useLazyRegister(fn, condition: boolean, ctxName = 'unknown') {
 
     useEffect(() => {
         if (condition) {
-            const epics: ((...args: any[]) => EpicReturn)[] = array(fn()).reduce((acc, item) => {
+            const fns = array(fn());
+            const epics: ((...args: any[]) => EpicReturn)[] = fns.reduce((acc, item) => {
                 return acc.concat(item.epics);
             }, []);
             const outgoing = (action$: Observable<any>, state$: Observable<any>, deps) => {
@@ -33,7 +34,7 @@ export function useLazyRegister(fn, condition: boolean, ctxName = 'unknown') {
                     takeUntil(sub$.current),
                 );
             };
-            const items = fn().map(item => {
+            const items = fns.map(item => {
                 const { epics, ...rest } = item;
                 return { ...rest, epics: [] };
             });
