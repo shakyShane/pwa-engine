@@ -46,7 +46,7 @@ export function getNavigationHandler(resolveFn: ResolveFn) {
          */
         const push$ = action$.pipe(
             ofType(LOCATION_CHANGE),
-            filter(({ payload }) => payload.action === 'PUSH'),
+            filter(({ payload }) => payload.action === 'PUSH' || payload.action === 'REPLACE'),
         );
         /**
          * POP happens on the back button + on first render,
