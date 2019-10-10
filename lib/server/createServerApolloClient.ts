@@ -96,6 +96,7 @@ export function createServerApolloClient(
     const httpLink = createHttpLink({
         uri: `${backend}/graphql`,
         credentials: 'same-origin',
+        useGETForQueries: true,
         headers: {
             cookie: req.header('Cookie'),
         },
