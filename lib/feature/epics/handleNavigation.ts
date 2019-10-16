@@ -38,6 +38,7 @@ export function getNavigationHandler(resolveFn: ResolveFn) {
         state$: StateObservable<{ runtime: RuntimeState; router: RouterState }>,
         deps: EpicDeps,
     ): Observable<Action> {
+        const resolveName$: Observable<string> = state$.pipe(pluck('runtime', 'resolve', 'componentName'));
         const online$: Observable<boolean> = state$.pipe(pluck('runtime', 'online'));
         const outdated$: Observable<boolean> = state$.pipe(pluck('runtime', 'outdated'));
 
@@ -131,11 +132,12 @@ export function getNavigationHandler(resolveFn: ResolveFn) {
                     return concat(
                         of(RuntimeMsg(RuntimeActions.ScrollTop, { duration: 0, selector: scrollTo })),
                         resolveFn(location.pathname, online$, outdated$).pipe(
-                            mergeMap((output: ResolvedComponent) => {
-                                return concat(
-                                    of(RuntimeMsg(RuntimeActions.SetResolve, output)),
-                                    of(RuntimeMsg(RuntimeActions.SetResolving, false)),
-                                );
+                            withLatestFrom(resolveName$),
+                            filter(
+                                ([output, prevName]: [ResolvedComponent, string]) => output.componentName !== prevName,
+                            ),
+                            map(([output]: [ResolvedComponent, any]) => {
+                                return RuntimeMsg(RuntimeActions.SetResolve, output);
                             }),
                         ),
                     );
