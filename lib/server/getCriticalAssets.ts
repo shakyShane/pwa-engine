@@ -12,6 +12,8 @@ export type Stats = {
     };
 };
 
+export type StatsFn = () => Stats;
+
 export type CriticalAssets = {
     js: string;
     css: string;
