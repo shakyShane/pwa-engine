@@ -18,7 +18,6 @@ import {
     getCriticalAssets,
     getJsEntryPointFilePaths,
     Stats,
-    StatsFn,
 } from './getCriticalAssets';
 import { createServerApolloClient } from './createServerApolloClient';
 import { getStatusFromErrors } from './getStatusFromErrors';
@@ -35,8 +34,8 @@ export interface GetSsrAppParams {
 }
 
 export function getSSRMiddleware(parameters: {
-    stats: Stats | StatsFn;
-    legacyStats: Stats | StatsFn;
+    stats: Stats;
+    legacyStats: Stats;
     assetPrefix: string;
     legacyAssetPrefix: string;
     distDir: string;
@@ -68,22 +67,12 @@ export function getSSRMiddleware(parameters: {
         legacyAssetPrefix,
         errorHtml,
     } = parameters;
-    function getStats() {
-        if (typeof stats === 'function' && typeof legacyStats === 'function') {
-            return {
-                stats: stats(),
-                legacyStats: legacyStats(),
-            };
-        }
-        return { stats, legacyStats } as { stats: Stats; legacyStats: Stats };
-    }
+    const criticalAssets = getCriticalAssets(stats, distDir);
+    const noneCriticalJs = getJsEntryPointFilePaths(stats);
+
+    const legacyNoneCriticalJs = getJsEntryPointFilePaths(legacyStats);
 
     return function(req, res, next) {
-        const { stats, legacyStats } = getStats();
-        const criticalAssets = getCriticalAssets(stats, distDir);
-        const noneCriticalJs = getJsEntryPointFilePaths(stats);
-        const legacyNoneCriticalJs = getJsEntryPointFilePaths(legacyStats);
-
         /**
          * Parse the user-agent to decide whether or not to support the
          * modern loading of JS
