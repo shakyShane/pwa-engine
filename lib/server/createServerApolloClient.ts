@@ -13,6 +13,7 @@ export enum GqlError {
     NotFound = 'NotFound',
     GqlError = 'GqlError',
     Network = 'Network',
+    Redirect = 'Redirect',
 }
 
 export type GqlErrors =
@@ -30,7 +31,16 @@ export type GqlErrors =
               networkError: ErrorResponse['networkError'];
               operation: Operation;
           };
-      };
+      }
+    | RedirectError;
+
+export type RedirectError = {
+    type: GqlError.Redirect;
+    payload: {
+        status: number;
+        url: string;
+    };
+};
 
 export function createServerApolloClient(
     backend: string,
@@ -53,6 +63,14 @@ export function createServerApolloClient(
                             type: GqlError.NotFound,
                             payload: {
                                 pathname: vars.urlKey!,
+                            },
+                        });
+                    } else if (response.urlResolver.type === 'REDIRECT') {
+                        errors.push({
+                            type: GqlError.Redirect,
+                            payload: {
+                                status: response.urlResolver.redirect_type!,
+                                url: response.urlResolver.redirect_url!,
                             },
                         });
                     } else {

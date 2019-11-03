@@ -19,7 +19,7 @@ import {
     getJsEntryPointFilePaths,
     Stats,
 } from './getCriticalAssets';
-import { createServerApolloClient } from './createServerApolloClient';
+import { createServerApolloClient, GqlError, RedirectError } from './createServerApolloClient';
 import { getStatusFromErrors } from './getStatusFromErrors';
 import { createRuntimeDebug } from '../utils/runtimeDebug';
 
@@ -94,9 +94,20 @@ export function getSSRMiddleware(parameters: {
                 mergeMap(resp => convertDataToResolved(resp)),
                 tap(x => debug('convertDataToResolved(resp)', x)),
                 mergeMap(resolvedUrl => {
+                    const errors = getErrors();
+                    if (errors.length) {
+                        const redirect = errors.find(x => x.type === GqlError.Redirect) as RedirectError;
+                        if (redirect) {
+                            return of({ html: '', status: redirect.payload.status, redirect: redirect.payload.url });
+                        }
+                    }
+
                     const [App] = getSsrApp({ client, resolvedUrl, domain, version, rawPath: req.url });
                     return defer(() => renderToStringWithData(App)).pipe(
                         mergeMap(content => {
+                            const errors = getErrors();
+                            const status = getStatusFromErrors(errors);
+
                             const initialState = client.extract();
                             const helmet = Helmet.renderStatic();
                             const assetsForType = getAssetsForType([resolvedUrl.componentName], stats);
@@ -104,9 +115,6 @@ export function getSSRMiddleware(parameters: {
                             debug(`assetsForType=${resolvedUrl.componentName}`, assetsForType);
 
                             const legacyAssetsForType = getAssetsForType([resolvedUrl.componentName], legacyStats);
-                            const errors = getErrors();
-
-                            const status = getStatusFromErrors(errors);
 
                             const html = renderShell({
                                 content: content,
@@ -125,23 +133,29 @@ export function getSSRMiddleware(parameters: {
                                 domain,
                                 version,
                             });
-                            return of({ html, status });
+                            return of({ html, status, redirect: false });
                         }),
                     );
                 }),
                 take(1),
             )
             .subscribe({
-                next: ({ html, status }) => {
-                    res.status(status);
-                    res.send(`<!doctype html>\n${html}`);
+                next: ({ html, status, redirect }) => {
+                    if (redirect) {
+                        res.status(status)
+                            .redirect(redirect)
+                            .send();
+                    } else {
+                        res.status(status);
+                        res.send(`<!doctype html>\n${html}`);
+                    }
                 },
                 complete: () => {
                     res.end();
                 },
                 error: e => {
                     console.error('A failure occurred during SSR for req.url: ', req.url);
-                    console.error(e);
+                    console.error(e, typeof e);
 
                     res.status(500);
                     res.send(errorHtml({ criticalAssets, error: e }));
