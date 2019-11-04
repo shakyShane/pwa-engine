@@ -1,4 +1,4 @@
-import { GqlError, GqlErrors } from './createServerApolloClient';
+import { GqlErrors, GqlError } from '../utils/apolloClientErrorHandlers';
 
 export function getStatusFromErrors(errors: GqlErrors[]): 200 | 404 | 500 {
     if (errors.length === 0) {

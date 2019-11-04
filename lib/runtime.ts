@@ -23,14 +23,14 @@ export interface CreateRunTimeParams {
 }
 
 export function createRuntime(params: CreateRunTimeParams) {
-    const apolloClient = getBrowserApolloClient(params.apiBase, params.links, params.initialState);
-    const resolveFn = resolve(params, apolloClient);
+    const [apolloClient, errors] = getBrowserApolloClient(params.apiBase, params.links, params.initialState);
+    const resolveFn = resolve(params, apolloClient, errors);
     const urlWriter = createWriter(apolloClient, params.urlQuery);
 
     return {
         apolloClient,
         resolveWeak: resolveWeak(params, apolloClient),
-        resolve: resolve(params, apolloClient),
+        resolve: resolve(params, apolloClient, errors),
         registerRuntime: registerRuntime(resolveFn, urlWriter),
         writeUrls: urlWriter,
     };

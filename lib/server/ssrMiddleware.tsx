@@ -19,9 +19,10 @@ import {
     getJsEntryPointFilePaths,
     Stats,
 } from './getCriticalAssets';
-import { createServerApolloClient, GqlError, RedirectError } from './createServerApolloClient';
+import { createServerApolloClient } from './createServerApolloClient';
 import { getStatusFromErrors } from './getStatusFromErrors';
 import { createRuntimeDebug } from '../utils/runtimeDebug';
+import { RedirectError, GqlError } from '../utils/apolloClientErrorHandlers';
 
 const debug = createRuntimeDebug('getSSRMiddleware');
 
