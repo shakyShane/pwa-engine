@@ -1,10 +1,11 @@
 import ApolloClient from 'apollo-client';
 import { createHttpLink } from 'apollo-link-http';
 import { defaultDataIdFromObject, InMemoryCache } from 'apollo-cache-inmemory';
-import { ApolloLink } from 'apollo-link';
+import { ApolloLink, Operation } from 'apollo-link';
 
 import { createRuntimeDebug } from '../utils/runtimeDebug';
 import { getUrlResolverError, getNetworkErrors, GqlErrors } from '../utils/apolloClientErrorHandlers';
+import { ErrorResponse } from 'apollo-link-error';
 
 const debug = createRuntimeDebug('createServerApolloClient');
 
