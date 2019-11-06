@@ -9,6 +9,7 @@ import { convertDataToResolved, FetchedData, fetchFromKnownOrNetwork } from './f
 import { getKnownRoute } from './getKnownRoute';
 import { UrlQueryInput, UrlQueryResult } from '../types';
 import { createRuntimeDebug } from './runtimeDebug';
+import { GqlError, RedirectError } from './apolloClientErrorHandlers';
 
 const debug = createRuntimeDebug(`resolve`);
 
@@ -38,7 +39,7 @@ export type ResolveFn = (
     outdated$: Observable<boolean>,
 ) => Observable<ResolvedComponent>;
 
-export function resolve(params: CreateRunTimeParams, client: ApolloClient<any>) {
+export function resolve(params: CreateRunTimeParams, client: ApolloClient<any>, getErrors: any) {
     /**
      * Using the current pathname, try to resolve into a known component
      *
@@ -117,6 +118,15 @@ export function resolve(params: CreateRunTimeParams, client: ApolloClient<any>) 
             tap(resp => debug(resp)),
             withLatestFrom(online$),
             mergeMap(([resolved, online]: [ResolvedUrl, boolean]) => {
+                const errors = getErrors();
+                if (errors.length) {
+                    const redirect = errors.find(x => x.type === GqlError.Redirect) as RedirectError;
+                    if (redirect) {
+                        window.location.replace(redirect.payload.url);
+                        return EMPTY;
+                    }
+                }
+
                 return getComponent(resolved.componentName, online).pipe(
                     map(component => {
                         return {

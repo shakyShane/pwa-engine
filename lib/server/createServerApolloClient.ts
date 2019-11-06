@@ -1,11 +1,10 @@
 import ApolloClient from 'apollo-client';
 import { createHttpLink } from 'apollo-link-http';
 import { defaultDataIdFromObject, InMemoryCache } from 'apollo-cache-inmemory';
-import { ErrorResponse, onError } from 'apollo-link-error';
-import { ApolloLink, Operation } from 'apollo-link';
+import { ApolloLink } from 'apollo-link';
 
-import { UrlQueryInput, UrlQueryResult } from '../types';
 import { createRuntimeDebug } from '../utils/runtimeDebug';
+import { getUrlResolverError, getNetworkErrors, GqlErrors } from '../utils/apolloClientErrorHandlers';
 
 const debug = createRuntimeDebug('createServerApolloClient');
 
@@ -49,67 +48,8 @@ export function createServerApolloClient(
 ): [ApolloClient<any>, () => GqlErrors[]] {
     const errors: GqlErrors[] = [];
 
-    const urlResolverError = new ApolloLink((operation, forward) => {
-        if (!forward) {
-            return null;
-        }
-        return forward(operation).map(data => {
-            switch (operation.operationName) {
-                case 'resolveUrl': {
-                    const vars = operation.variables as UrlQueryInput;
-                    const response = data.data as { urlResolver: UrlQueryResult };
-                    if (response.urlResolver === null) {
-                        errors.push({
-                            type: GqlError.NotFound,
-                            payload: {
-                                pathname: vars.urlKey!,
-                            },
-                        });
-                    } else if (response.urlResolver.type === 'REDIRECT') {
-                        errors.push({
-                            type: GqlError.Redirect,
-                            payload: {
-                                status: response.urlResolver.redirect_type!,
-                                url: response.urlResolver.redirect_url!,
-                            },
-                        });
-                    } else {
-                        debug(vars.urlKey, response.urlResolver.type);
-                    }
-                    break;
-                }
-                case 'productDetail': {
-                    debug(operation.variables);
-                    break;
-                }
-                default:
-                    return data;
-            }
-            return data;
-        });
-    });
-
-    const networkErrors = onError(({ graphQLErrors, networkError, operation }) => {
-        if (graphQLErrors) {
-            graphQLErrors.map(({ message, locations, path }) => {
-                console.log(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`);
-                errors.push({
-                    type: GqlError.GqlError,
-                    payload: { message, locations, path, operation },
-                });
-            });
-        }
-
-        if (networkError) {
-            errors.push({
-                type: GqlError.Network,
-                payload: {
-                    networkError,
-                    operation,
-                },
-            });
-        }
-    });
+    const urlResolverError = getUrlResolverError(errors, debug);
+    const networkErrors = getNetworkErrors(errors);
 
     const httpLink = createHttpLink({
         uri: `${backend}/graphql`,
