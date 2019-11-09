@@ -143,9 +143,8 @@ export function getSSRMiddleware(parameters: {
             .subscribe({
                 next: ({ html, status, redirect }) => {
                     if (redirect) {
-                        res.status(status)
-                            .redirect(redirect)
-                            .send();
+                        console.error(`Redirect triggered:`, `${redirect}[${status}]`);
+                        res.redirect(status, redirect);
                     } else {
                         res.status(status);
                         res.send(`<!doctype html>\n${html}`);
