@@ -9,7 +9,6 @@ import { RouteData } from './utils/getKnownRoute';
 
 export interface CreateRunTimeParams {
     links: ApolloLink[];
-    apiBase: string;
     components: {
         OfflineComponent: JSXElementConstructor<any>;
         ErrorComponent: JSXElementConstructor<any>;
@@ -23,7 +22,7 @@ export interface CreateRunTimeParams {
 }
 
 export function createRuntime(params: CreateRunTimeParams) {
-    const [apolloClient, errors] = getBrowserApolloClient(params.apiBase, params.links, params.initialState);
+    const [apolloClient, errors] = getBrowserApolloClient(params.links, params.initialState);
     const resolveFn = resolve(params, apolloClient, errors);
     const urlWriter = createWriter(apolloClient, params.urlQuery);
 
