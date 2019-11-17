@@ -18,7 +18,6 @@
   },
   "devDependencies": {
     "@types/react": "16.8.23",
-    "typescript": "3.5.3",
     "action-typed": "2.0.0",
     "apollo-cache-inmemory": "1.6.2",
     "apollo-client": "2.6.4",
@@ -40,7 +39,11 @@
     "redux-observable": "1.1.0",
     "rxjs": "6.5.2",
     "store": "2.0.12",
-    "zenscroll": "4.0.2"
+    "typescript": "^3.7.2",
+    "zenscroll": "4.0.2",
+    "prettier": "1.19.1",
+    "@apollo/react-ssr": "^3.0.1",
+    "classnames": "2.2.6"
   },
   "peerDependencies": {
     "action-typed": "2.0.0",
@@ -66,9 +69,5 @@
     "store": "2.0.12",
     "zenscroll": "4.0.2"
   },
-  "dependencies": {
-    "@apollo/react-ssr": "^3.0.1",
-    "classnames": "2.2.6",
-    "prettier": "1.18.2"
-  }
+  "dependencies": {}
 }

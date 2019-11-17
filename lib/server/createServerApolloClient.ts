@@ -1,46 +1,12 @@
 import ApolloClient from 'apollo-client';
 import { createHttpLink } from 'apollo-link-http';
 import { defaultDataIdFromObject, InMemoryCache } from 'apollo-cache-inmemory';
-import { ApolloLink, Operation } from 'apollo-link';
+import { ApolloLink } from 'apollo-link';
 
 import { createRuntimeDebug } from '../utils/runtimeDebug';
 import { getUrlResolverError, getNetworkErrors, GqlErrors } from '../utils/apolloClientErrorHandlers';
-import { ErrorResponse } from 'apollo-link-error';
 
 const debug = createRuntimeDebug('createServerApolloClient');
-
-export enum GqlError {
-    NotFound = 'NotFound',
-    GqlError = 'GqlError',
-    Network = 'Network',
-    Redirect = 'Redirect',
-}
-
-export type GqlErrors =
-    | {
-          type: GqlError.NotFound;
-          payload: { pathname: string };
-      }
-    | {
-          type: GqlError.GqlError;
-          payload: { message: string; locations: string; path: string; operation: Operation };
-      }
-    | {
-          type: GqlError.Network;
-          payload: {
-              networkError: ErrorResponse['networkError'];
-              operation: Operation;
-          };
-      }
-    | RedirectError;
-
-export type RedirectError = {
-    type: GqlError.Redirect;
-    payload: {
-        status: number;
-        url: string;
-    };
-};
 
 export function createServerApolloClient(
     backend: string,
