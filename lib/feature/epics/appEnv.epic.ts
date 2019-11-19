@@ -1,4 +1,4 @@
-import { EMPTY, scheduled, asyncScheduler } from 'rxjs';
+import { EMPTY, scheduled, asyncScheduler, Observable } from 'rxjs';
 import { filter, mergeMap, pluck, take } from 'rxjs/operators';
 
 import { RuntimeEnv, RuntimeActions, RuntimeMsg, RuntimeState } from '../runtime.register';
@@ -6,7 +6,7 @@ import { createRuntimeDebug } from '../../utils/runtimeDebug';
 
 const debug = createRuntimeDebug('appEnvEpic');
 
-export function appEnvEpic(_actions, state, deps: { env: Partial<RuntimeEnv> }) {
+export function appEnvEpic(_actions, state: Observable<any>, deps: { env: Partial<RuntimeEnv> }) {
     const env = cheapClone(deps.env);
 
     if (env === undefined) {
@@ -23,13 +23,12 @@ export function appEnvEpic(_actions, state, deps: { env: Partial<RuntimeEnv> }) 
          * We only care about this value once
          */
         take(1),
-
         /**
          * runtime.env will be an empty object if it hasn't been set initially,
          * so to determine if it has/hasn't been set we look for the presence
          * of NODE_ENV;
          */
-        filter((maybeEnv: RuntimeState['env']) => !Boolean(maybeEnv.NODE_ENV)),
+        filter((maybeEnv: RuntimeState['env']) => Boolean(maybeEnv.NODE_ENV)),
 
         /**
          * If we get here, it means the ENV was NOT set, so we set it

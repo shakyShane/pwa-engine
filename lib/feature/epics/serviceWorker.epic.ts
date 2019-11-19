@@ -12,8 +12,13 @@ import {
 } from '../effects/serviceWorkers';
 import { RuntimeActions, RuntimeEnv, RuntimeState } from '../runtime.register';
 import { assertUnreachable } from '../../utils/general';
+import { EpicDeps } from '../../types';
 
-export function serviceWorkerEpic(action$, state$, deps): Observable<Action> {
+export function serviceWorkerEpic(
+    action$: Observable<any>,
+    state$: Observable<any>,
+    deps: EpicDeps,
+): Observable<Action> {
     const env$: Observable<Partial<RuntimeEnv>> = state$.pipe(pluck('runtime', 'env'));
 
     return action$.pipe(
