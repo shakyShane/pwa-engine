@@ -84,7 +84,6 @@ export function runtimeReducer(state = initialState, action: Handler): RuntimeSt
             return {
                 ...state,
                 resolve: action.payload,
-                resolving: false,
             };
         }
         case RuntimeActions.SetOutdated: {

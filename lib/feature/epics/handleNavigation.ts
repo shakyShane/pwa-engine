@@ -1,24 +1,16 @@
-import { Observable, of, concat, merge, asyncScheduler, EMPTY } from 'rxjs';
+import { Observable, of, concat, merge, timer, zip } from 'rxjs';
 import { ofType, StateObservable } from 'redux-observable';
 import { LOCATION_CHANGE, LocationChangeAction, RouterState } from 'connected-react-router';
-import {
-    delay,
-    filter,
-    pluck,
-    mergeMap,
-    subscribeOn,
-    pairwise,
-    startWith,
-    withLatestFrom,
-    map,
-    switchMap,
-} from 'rxjs/operators';
+import { filter, pluck, pairwise, startWith, withLatestFrom, map, switchMap, tap, share } from 'rxjs/operators';
 import { Location } from 'history';
 import { Action } from 'redux';
 
 import { ResolvedComponent, ResolveFn } from '../../utils/resolve';
 import { RuntimeActions, RuntimeMsg, RuntimeState } from '../runtime.register';
 import { SameBaseResolver, EpicDeps } from '../../types';
+
+import { createRuntimeDebug } from '../../utils/runtimeDebug';
+const debug = createRuntimeDebug('handleNavigation.ts');
 
 /**
  * To prevent navigations within the same route component,
@@ -48,6 +40,8 @@ export function getNavigationHandler(resolveFn: ResolveFn) {
         const push$ = action$.pipe(
             ofType(LOCATION_CHANGE),
             filter(({ payload }) => payload.action === 'PUSH' || payload.action === 'REPLACE'),
+            tap(x => debug('actions PUSH|REPLACE ->', x)),
+            share(),
         );
         /**
          * POP happens on the back button + on first render,
@@ -56,7 +50,9 @@ export function getNavigationHandler(resolveFn: ResolveFn) {
         const pop$ = action$.pipe(
             ofType(LOCATION_CHANGE),
             filter(({ payload }) => payload.action === 'POP'),
+            tap(x => debug('actions POP ->', x)),
             filter(({ payload }) => payload.isFirstRendering === false),
+            share(),
         );
         /**
          * Merged stream of push/pop
@@ -65,6 +61,7 @@ export function getNavigationHandler(resolveFn: ResolveFn) {
             pluck<LocationChangeAction, Location>('payload', 'location'),
             startWith(state$.value.router.location),
             pairwise(),
+            share(),
             startWith([state$.value.router.location, state$.value.router.location]),
         ) as Observable<[Location, Location]>;
 
@@ -100,25 +97,15 @@ export function getNavigationHandler(resolveFn: ResolveFn) {
             notSameBase$.pipe(
                 withLatestFrom(deps.window$),
                 switchMap(
-                    ([[, location], window]): Observable<Action> => {
-                        const scrollTo = location.state && location.state.scrollTo ? location.state.scrollTo : 'body';
-                        const scrollY = window.scrollY;
-
+                    ([[, location]]): Observable<Action> => {
                         return concat(
-                            of(RuntimeMsg(RuntimeActions.SetResolving, true)),
-                            scrollY > 10
-                                ? of(RuntimeMsg(RuntimeActions.ScrollTop, { duration: 300, selector: scrollTo }))
-                                : EMPTY,
-                            resolveFn(location.pathname, online$, outdated$).pipe(
-                                mergeMap((output: ResolvedComponent) => {
-                                    return concat(
-                                        of(RuntimeMsg(RuntimeActions.SetResolve, output)).pipe(
-                                            delay(scrollY > 10 ? 300 : 0),
-                                        ),
-                                        of(RuntimeMsg(RuntimeActions.SetResolving, false)).pipe(
-                                            subscribeOn(asyncScheduler),
-                                        ),
-                                    );
+                            of(
+                                RuntimeMsg(RuntimeActions.SetResolving, true),
+                                RuntimeMsg(RuntimeActions.ScrollTop, { duration: 0, selector: 'body' }),
+                            ),
+                            zip(timer(500), resolveFn(location.pathname, online$, outdated$)).pipe(
+                                map(([, output]: [number, ResolvedComponent]) => {
+                                    return RuntimeMsg(RuntimeActions.SetResolve, output);
                                 }),
                             ),
                         );
@@ -128,7 +115,6 @@ export function getNavigationHandler(resolveFn: ResolveFn) {
             isSameBase$.pipe(
                 switchMap(([, location]) => {
                     const scrollTo = location.state && location.state.scrollTo ? location.state.scrollTo : 'body';
-
                     return concat(
                         of(RuntimeMsg(RuntimeActions.ScrollTop, { duration: 0, selector: scrollTo })),
                         resolveFn(location.pathname, online$, outdated$).pipe(
