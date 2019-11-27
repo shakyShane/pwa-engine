@@ -1,5 +1,4 @@
 import { createStore, applyMiddleware, combineReducers } from 'redux';
-import { connectRouter, routerMiddleware } from 'connected-react-router';
 import { combineEpics, createEpicMiddleware } from 'redux-observable';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { filter, mergeMap, pluck, withLatestFrom } from 'rxjs/operators';
@@ -23,7 +22,7 @@ export type RegisterEpicApi = (fn: RegisterEpicFn, ctxName?: string) => void;
 export function configureStore<StoreState, EpicDeps>(
     parameters: ConfigureStoreParams<StoreState, EpicDeps>,
 ): [any, (item: RegisterItem | RegisterItem[]) => void, RegisterEpicApi] {
-    let { history, epics = [], deps = {}, compose, initialState = {}, initialReducers = {} } = parameters;
+    let { epics = [], deps = {}, compose, initialState = {}, initialReducers = {} } = parameters;
     const registered: string[] = [];
     const dependencies: Partial<EpicDeps> = {
         ...deps,
@@ -57,7 +56,6 @@ export function configureStore<StoreState, EpicDeps>(
     };
 
     const staticReducers = {
-        router: connectRouter(history),
         ...initialReducers,
     };
 
@@ -77,7 +75,7 @@ export function configureStore<StoreState, EpicDeps>(
         return result;
     };
 
-    const middleware = applyMiddleware(logger, routerMiddleware(history), epicMiddleware);
+    const middleware = applyMiddleware(logger, epicMiddleware);
 
     const store: any = createStore(createReducer(), initialState, compose(middleware));
     store.asyncReducers = {};

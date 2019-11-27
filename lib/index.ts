@@ -1,4 +1,3 @@
-export { createRuntime } from './runtime';
 export { createBrowserStore } from './store/browser-store';
 export { storageRegister } from './storage/storage.register';
 export { initialState } from './feature/runtime.register';
