@@ -3,10 +3,8 @@ import { catchError, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
 import ApolloClient from 'apollo-client';
 import { JSXElementConstructor } from 'react';
 
-import { CreateRunTimeParams } from '../runtime';
-
 import { convertDataToResolved, FetchedData, fetchFromKnownOrNetwork } from './fetchFromKnownOrNetwork';
-import { getKnownRoute } from './getKnownRoute';
+import { getKnownRoute, RouteData } from './getKnownRoute';
 import { UrlQueryInput, UrlQueryResult } from '../types';
 import { createRuntimeDebug } from './runtimeDebug';
 import { GqlError, RedirectError } from './apolloClientErrorHandlers';
@@ -39,7 +37,19 @@ export type ResolveFn = (
     outdated$: Observable<boolean>,
 ) => Observable<ResolvedComponent>;
 
-export function resolve(params: CreateRunTimeParams, client: ApolloClient<any>, getErrors: any) {
+export type ResolveParams = {
+    components: {
+        OfflineComponent: JSXElementConstructor<any>;
+        ErrorComponent: JSXElementConstructor<any>;
+        OutdatedComponent: JSXElementConstructor<any>;
+        NotFoundComponent: JSXElementConstructor<any>;
+    };
+    loaderFn(componentName): Promise<any>;
+    knownRoutes: RouteData[];
+    urlQuery: any;
+};
+
+export function resolve(params: ResolveParams, client: ApolloClient<any>, getErrors: any) {
     /**
      * Using the current pathname, try to resolve into a known component
      *
@@ -144,7 +154,12 @@ export function resolve(params: CreateRunTimeParams, client: ApolloClient<any>, 
     };
 }
 
-export function resolveWeak(params: CreateRunTimeParams, client: ApolloClient<any>) {
+type ResolveWeakParams = {
+    knownRoutes: RouteData[];
+    urlQuery: any;
+};
+
+export function resolveWeak(params: ResolveWeakParams, client: ApolloClient<any>) {
     return function resolveWeakInner(urlKey: string, resolveFn: (componentName: string) => any): ResolvedComponent {
         const knownData =
             getKnownRoute(urlKey, params.knownRoutes) || syncReadFromApolloClient(client, urlKey, params.urlQuery);
