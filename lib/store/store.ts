@@ -13,6 +13,7 @@ type ConfigureStoreParams<State, EpicDeps> = {
     compose: any;
     initialState?: Partial<State>;
     initialReducers?: { [index: string]: (...args: any[]) => any };
+    createMiddleware?<T extends Function[]>(middlewares: T[]): T[];
 };
 
 export type RegisterEpicFn = (action$: Observable<any>, state$?: Observable<any>, deps?: any) => Observable<any>;
@@ -21,7 +22,14 @@ export type RegisterEpicApi = (fn: RegisterEpicFn, ctxName?: string) => void;
 export function configureStore<StoreState, EpicDeps>(
     parameters: ConfigureStoreParams<StoreState, EpicDeps>,
 ): [any, (item: RegisterItem | RegisterItem[]) => void, RegisterEpicApi] {
-    let { epics = [], deps = {}, compose, initialState = {}, initialReducers = {} } = parameters;
+    let {
+        epics = [],
+        deps = {},
+        compose,
+        initialState = {},
+        initialReducers = {},
+        createMiddleware = input => input,
+    } = parameters;
     const registered: string[] = [];
     const dependencies: Partial<EpicDeps> = {
         ...deps,
@@ -74,7 +82,7 @@ export function configureStore<StoreState, EpicDeps>(
         return result;
     };
 
-    const middleware = applyMiddleware(logger, epicMiddleware);
+    const middleware = applyMiddleware(...createMiddleware([logger, epicMiddleware]));
 
     const store: any = createStore(createReducer(), initialState, compose(middleware));
     store.asyncReducers = {};

@@ -16,10 +16,11 @@ type BrowserStoreParams<StoreState> = {
     initialReducers?: { [index: string]: (...args: any[]) => any };
     registrations?: RegisterItem[];
     epics?: [];
+    createMiddleware?<T extends Function[]>(middlewares: T[]): T[];
 };
 
 export function createBrowserStore<T extends { [index: string]: any }>(parameters: BrowserStoreParams<T> = {}) {
-    let { deps = {}, initialState = {}, registrations = [], epics = [] } = parameters;
+    let { deps = {}, initialState = {}, registrations = [], epics = [], createMiddleware } = parameters;
 
     const storage = createStorage();
     const cookieStorage = createCookieStorage();
@@ -79,6 +80,7 @@ export function createBrowserStore<T extends { [index: string]: any }>(parameter
         compose: composeEnhancers,
         initialState,
         initialReducers: initialReducerTree,
+        createMiddleware,
     });
 
     if (window.Cypress) {
