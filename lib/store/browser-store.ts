@@ -1,4 +1,3 @@
-import { createBrowserHistory } from 'history';
 import { compose } from 'redux';
 import { EMPTY, of } from 'rxjs';
 
@@ -12,7 +11,6 @@ import { configureStore } from './store';
 const debug = createRuntimeDebug('browser-store.ts');
 
 type BrowserStoreParams<StoreState> = {
-    history?: History;
     deps?: Partial<EpicDeps>;
     initialState?: Partial<StoreState>;
     initialReducers?: { [index: string]: (...args: any[]) => any };
@@ -21,7 +19,7 @@ type BrowserStoreParams<StoreState> = {
 };
 
 export function createBrowserStore<T extends { [index: string]: any }>(parameters: BrowserStoreParams<T> = {}) {
-    let { history = createBrowserHistory(), deps = {}, initialState = {}, registrations = [], epics = [] } = parameters;
+    let { deps = {}, initialState = {}, registrations = [], epics = [] } = parameters;
 
     const storage = createStorage();
     const cookieStorage = createCookieStorage();
@@ -76,7 +74,6 @@ export function createBrowserStore<T extends { [index: string]: any }>(parameter
     }, {});
 
     const [store, register, registerEpic] = configureStore({
-        history,
         epics: epics as any,
         deps: epicDeps,
         compose: composeEnhancers,
@@ -93,7 +90,6 @@ export function createBrowserStore<T extends { [index: string]: any }>(parameter
     });
 
     return {
-        history,
         storage,
         store,
         register,

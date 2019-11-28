@@ -8,7 +8,6 @@ import { createRuntimeDebug } from '../utils/runtimeDebug';
 const debug = createRuntimeDebug('store.ts');
 
 type ConfigureStoreParams<State, EpicDeps> = {
-    history: any;
     epics: any[];
     deps: Partial<EpicDeps>;
     compose: any;
