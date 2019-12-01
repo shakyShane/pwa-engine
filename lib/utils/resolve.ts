@@ -1,5 +1,5 @@
-import { defer, EMPTY, Observable, of } from 'rxjs';
-import { catchError, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
+import { BehaviorSubject, defer, EMPTY, Observable, of } from 'rxjs';
+import { catchError, map, mergeMap, pluck, tap, withLatestFrom } from 'rxjs/operators';
 import ApolloClient from 'apollo-client';
 import { JSXElementConstructor } from 'react';
 
@@ -8,6 +8,7 @@ import { getKnownRoute, RouteData } from './getKnownRoute';
 import { UrlQueryInput, UrlQueryResult } from '../types';
 import { createRuntimeDebug } from './runtimeDebug';
 import { GqlError, RedirectError } from './apolloClientErrorHandlers';
+import { Store } from 'redux';
 
 const debug = createRuntimeDebug(`resolve`);
 
@@ -248,4 +249,26 @@ export function fetchedDataStub(urlKey: string, type: string): FetchedData {
         },
         urlKey,
     } as FetchedData;
+}
+
+/**
+ * Produce
+ * @param store
+ * @param online
+ * @param outdated
+ */
+export function getRuntimeState<T extends { runtime: { online: boolean; outdated: boolean } }>(
+    store: Store<T>,
+    online = true,
+    outdated = false,
+): Observable<{ online: boolean; outdated: boolean }> {
+    const output$ = new BehaviorSubject<{ online: boolean; outdated: boolean }>({ online, outdated });
+    const store$ = new Observable<T>(obs => {
+        const unlisten = store.subscribe(() => {
+            obs.next(store.getState());
+        });
+        return () => unlisten();
+    });
+    store$.pipe(pluck('runtime'), tap(output$)).subscribe();
+    return output$;
 }

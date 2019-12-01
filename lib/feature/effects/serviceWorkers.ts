@@ -1,8 +1,6 @@
 import { EMPTY, Observable, of } from 'rxjs';
 import { ignoreElements, share, tap, mergeMap, withLatestFrom } from 'rxjs/operators';
 import { Action } from 'redux';
-import { ofType } from 'redux-observable';
-import { LOCATION_CHANGE } from 'connected-react-router';
 
 import { RuntimeActions, RuntimeMsg } from '../runtime.register';
 import { createRuntimeDebug } from '../../utils/runtimeDebug';
@@ -55,18 +53,13 @@ export function createStreamOfSWMessages(): Observable<ServiceWorkerMessageEvent
 
 /**
  * Poll for updates on an interval + on page changes
- * @param action$
+ * @param historyObs$
  */
-export function pollForServiceWorkerUpdates(action$: Observable<Action>) {
-    return (registration: ServiceWorkerRegistration): Observable<Action> => {
+export function pollForServiceWorkerUpdates(historyObs$: Observable<unknown>) {
+    return (registration: ServiceWorkerRegistration): Observable<unknown> => {
         debug('setting up listener to check for sw updates on every navigation');
 
-        /**
-         * Also check for updates on every navigation event;
-         */
-        const nav$ = action$.pipe(ofType(LOCATION_CHANGE));
-
-        return nav$.pipe(
+        return historyObs$.pipe(
             tap(() => {
                 if (registration && typeof (registration as any).update === 'function') {
                     debug('Checking for SW updates via registration.update()');

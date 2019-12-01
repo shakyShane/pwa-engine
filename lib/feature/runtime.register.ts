@@ -72,7 +72,7 @@ export function runtimeReducer(state = initialState, action: Handler): RuntimeSt
         case RuntimeActions.SetOnline: {
             return {
                 ...state,
-                online: true,
+                online: action.payload,
             };
         }
         case RuntimeActions.SetEnv: {
@@ -91,15 +91,7 @@ export function runtimeReducer(state = initialState, action: Handler): RuntimeSt
 
 export function registerRuntime() {
     return {
-        epics: [
-            // createWriteUrlsEpic(urlWriter),
-            // getNavigationHandler(resolveFn),
-            scrollTopEpic,
-            serviceWorkerEpic,
-            appEnvEpic,
-            onlineOffLineEpic,
-            reloadEpic,
-        ],
+        epics: [scrollTopEpic, serviceWorkerEpic, appEnvEpic, onlineOffLineEpic, reloadEpic],
         reducers: {
             runtime: runtimeReducer,
         },

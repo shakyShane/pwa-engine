@@ -52,6 +52,7 @@ export function createBrowserStore<T extends { [index: string]: any }>(parameter
             console.error(`resolve not implemented`, args);
             return EMPTY;
         },
+        historyEvents$: EMPTY,
         ...deps,
     };
 

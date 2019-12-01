@@ -50,7 +50,10 @@ export function serviceWorkerEpic(
                     /**
                      * Poll for service worker update once the current SW is registered
                      */
-                    const updates = sw$.pipe(switchMap(pollForServiceWorkerUpdates(action$)), ignoreElements());
+                    const updates = sw$.pipe(
+                        switchMap(pollForServiceWorkerUpdates(deps.historyEvents$)),
+                        ignoreElements(),
+                    );
                     return merge(msgHandlers$, updates);
                 case false:
                     return registerKillSwitchServiceWorker();
