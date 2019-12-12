@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 
-import { RegisterContext } from '../components/RegisterContext';
+import { RegisterContext } from '../components';
 import { from, Observable, Subject } from 'rxjs';
 import { mergeMap, takeUntil } from 'rxjs/operators';
 import { EpicReturn } from '../types';
