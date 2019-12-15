@@ -23,6 +23,7 @@ import { createServerApolloClient } from './createServerApolloClient';
 import { getStatusFromErrors } from './getStatusFromErrors';
 import { createRuntimeDebug } from '../utils/runtimeDebug';
 import { RedirectError, GqlError } from '../utils/apolloClientErrorHandlers';
+import { Reducer } from 'redux';
 
 const debug = createRuntimeDebug('getSSRMiddleware');
 
@@ -32,6 +33,12 @@ export interface GetSsrAppParams {
     domain: string;
     version: string;
     rawPath: string;
+}
+
+export interface SrrParams {
+    resolveSync(componentName: string): any;
+    reducers?: { [index: string]: Reducer };
+    state?: { [index: string]: any };
 }
 
 export function getSSRMiddleware(parameters: {
