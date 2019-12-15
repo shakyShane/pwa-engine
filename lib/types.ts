@@ -48,3 +48,22 @@ export interface UrlQueryResult {
 export interface UrlQueryInput {
     urlKey?: string | null;
 }
+
+export enum DataStatus {
+    Idle = 'Idle',
+    Pending = 'Pending',
+    Success = 'Success',
+    Error = 'Error',
+}
+
+export type Message = {
+    type: MessageType;
+    text: string;
+};
+
+export enum MessageType {
+    Info = 'Info',
+    Success = 'Success',
+    Error = 'Error',
+    Warning = 'Warning',
+}
