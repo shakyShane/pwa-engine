@@ -6,7 +6,7 @@ import { createRuntimeDebug } from '../utils/runtimeDebug';
 import { compose } from 'redux';
 import { Provider as ReduxProvider } from 'react-redux';
 import { StaticRouter } from 'react-router';
-import { ApolloProvider } from 'react-apollo';
+import { ApolloProvider } from '@apollo/react-hooks';
 import { RegisterContextProvider } from '../components';
 
 const debug = createRuntimeDebug('getSSRMiddleware');
