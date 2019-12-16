@@ -1,14 +1,14 @@
 import { BehaviorSubject, defer, EMPTY, Observable, of } from 'rxjs';
 import { catchError, map, mergeMap, pluck, tap, withLatestFrom } from 'rxjs/operators';
-import ApolloClient from 'apollo-client';
 import { JSXElementConstructor } from 'react';
 
 import { convertDataToResolved, FetchedData, fetchFromKnownOrNetwork } from './fetchFromKnownOrNetwork';
 import { getKnownRoute, RouteData } from './getKnownRoute';
-import { UrlQueryInput, UrlQueryResult } from '../types';
+// import { UrlQueryResult } from '../types';
 import { createRuntimeDebug } from './runtimeDebug';
 import { GqlError, RedirectError } from './apolloClientErrorHandlers';
 import { Store } from 'redux';
+import { Client } from 'urql';
 
 const debug = createRuntimeDebug(`resolve`);
 
@@ -50,7 +50,7 @@ export type ResolveParams = {
     urlQuery: any;
 };
 
-export function resolve(params: ResolveParams, client: ApolloClient<any>, getErrors: any) {
+export function resolve(params: ResolveParams, client: Client, getErrors: any) {
     /**
      * Using the current pathname, try to resolve into a known component
      *
@@ -160,10 +160,9 @@ type ResolveWeakParams = {
     urlQuery: any;
 };
 
-export function resolveWeak(params: ResolveWeakParams, client: ApolloClient<any>) {
+export function resolveWeak(params: ResolveWeakParams /*client: Client*/) {
     return function resolveWeakInner(urlKey: string, resolveFn: (componentName: string) => any): ResolvedComponent {
-        const knownData =
-            getKnownRoute(urlKey, params.knownRoutes) || syncReadFromApolloClient(client, urlKey, params.urlQuery);
+        const knownData = getKnownRoute(urlKey, params.knownRoutes);
         const [resolvedData, error] = syncObs(
             convertDataToResolved({ data: { urlResolver: knownData || null }, urlKey }),
         );
@@ -219,24 +218,25 @@ function syncObs<T>(obs$: Observable<T>): [T | undefined, Error | undefined] {
     return [output, error];
 }
 
-function syncReadFromApolloClient(client: ApolloClient<any>, urlKey: string, query: any): UrlQueryResult | undefined {
-    try {
-        const match = client.readQuery<{ urlResolver: UrlQueryResult }, UrlQueryInput>({
-            query,
-            variables: {
-                urlKey,
-            },
-        });
-        if (match && match.urlResolver) {
-            return match.urlResolver;
-        } else {
-            debug('no match in Apollo client');
-        }
-    } catch (e) {
-        debug('`syncReadFromApolloClient`', e);
-        return undefined;
-    }
-}
+// function syncReadFromApolloClient(/*client: Client, urlKey: string, query: any*/): UrlQueryResult | undefined {
+//     return undefined;
+// try {
+//     const match = client.readQuery<{ urlResolver: UrlQueryResult }, UrlQueryInput>({
+//         query,
+//         variables: {
+//             urlKey,
+//         },
+//     });
+//     if (match && match.urlResolver) {
+//         return match.urlResolver;
+//     } else {
+//         debug('no match in Apollo client');
+//     }
+// } catch (e) {
+//     debug('`syncReadFromApolloClient`', e);
+//     return undefined;
+// }
+// }
 
 export function fetchedDataStub(urlKey: string, type: string): FetchedData {
     return {

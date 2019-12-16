@@ -1,12 +1,12 @@
 import { defer, Observable, of, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { ApolloClient } from 'apollo-client';
 
 import { urlEntityToComponentName } from './urlEntityToComponentName';
 import { NOTFOUND_CMP, ResolvedUrl } from './resolve';
 import { getKnownRoute, RouteData } from './getKnownRoute';
 import { UrlQueryInput, UrlQueryResult } from '../types';
 import { createRuntimeDebug } from './runtimeDebug';
+import { Client } from 'urql';
 
 const debug = createRuntimeDebug('fetchFromKnownOrNetwork');
 
@@ -17,7 +17,7 @@ export interface FetchedData {
 
 export function fetchFromKnownOrNetwork(
     urlKey: string,
-    client: ApolloClient<any>,
+    client: Client,
     knownRoutes: RouteData[],
     query: any,
 ): Observable<FetchedData> {
@@ -38,15 +38,14 @@ export function fetchFromKnownOrNetwork(
      * query
      */
     return defer(() => {
-        return client.query<{ urlResolver: UrlQueryResult }, UrlQueryInput>({
-            query,
-            variables: {
+        return client
+            .query<{ urlResolver: UrlQueryResult }, UrlQueryInput>(query, {
                 urlKey,
-            },
-        });
+            })
+            .toPromise();
     }).pipe(
         map(result => {
-            return { data: result.data, urlKey };
+            return { data: result.data, urlKey } as any;
         }),
         catchError(e => {
             console.error('error from gql urlResolver', e);

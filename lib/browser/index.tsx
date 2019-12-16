@@ -7,11 +7,11 @@ import { createBrowserHistory, History } from 'history';
 import { share } from 'rxjs/operators';
 import { createBrowserStore } from '../store';
 import { registerRuntime, RuntimeEnv } from '../runtime';
-import { ApolloProvider } from '@apollo/react-hooks';
 import { RegisterContextProvider } from '../components';
 import { Provider as ReduxProvider } from 'react-redux';
 import { Router } from 'react-router-dom';
 import { storageRegister } from '../storage';
+import { Provider as UrqlProvider } from 'urql';
 import {
     AsyncLoader,
     AsyncRouter,
@@ -23,8 +23,8 @@ import {
     initialState as initialRouterState,
 } from '../router';
 import { readJson } from '../utils/readJson';
-import { getBrowserApolloClient } from '../utils/getBrowserApolloClient';
 import { cheapClone } from '../utils/cheapClone';
+import { getBrowserUrqlClient } from '../utils/getBrowserUrqlClient';
 
 export function init({
     loaderFn,
@@ -45,7 +45,7 @@ export function init({
         useGETForQueries: typeof window.Cypress === 'undefined',
     });
 
-    const [apolloClient, errors] = getBrowserApolloClient([...links, httpLink], readJson('apollo-client-state'));
+    const [apolloClient, errors] = getBrowserUrqlClient([...links, httpLink], readJson('apollo-client-state'));
 
     const resolveLocal = resolve(
         {
@@ -63,7 +63,7 @@ export function init({
             knownRoutes: knownRoutes,
             urlQuery: urlResolver,
         },
-        apolloClient,
+        // apolloClient,
     );
 
     /**
@@ -136,7 +136,7 @@ export function init({
     return () => {
         const App: React.FC = React.memo(props => {
             return (
-                <ApolloProvider client={apolloClient}>
+                <UrqlProvider value={apolloClient}>
                     <RegisterContextProvider register={register} registerEpic={registerEpic} epicDeps={epicDeps}>
                         <ReduxProvider store={store}>
                             <Router history={history}>
@@ -146,7 +146,7 @@ export function init({
                             </Router>
                         </ReduxProvider>
                     </RegisterContextProvider>
-                </ApolloProvider>
+                </UrqlProvider>
             );
         });
         const Async = (

@@ -1,15 +1,15 @@
 import { join } from 'path';
 
-import { renderToStringWithData } from '@apollo/react-ssr';
 import { ApolloLink } from 'apollo-link';
 import { Helmet } from 'react-helmet';
 import { defer, of } from 'rxjs';
 import { take, mergeMap, tap } from 'rxjs/operators';
-import { ApolloClient } from 'apollo-client';
+import ReactDOMServer from 'react-dom/server';
 
 import { convertDataToResolved, fetchFromKnownOrNetwork } from '../utils/fetchFromKnownOrNetwork';
 import { ResolvedUrl } from '../utils/resolve';
 import { RouteData } from '../';
+import ssrPrepass from 'react-ssr-prepass';
 
 import { renderShell } from './renderShell';
 import {
@@ -19,16 +19,17 @@ import {
     getJsEntryPointFilePaths,
     Stats,
 } from './getCriticalAssets';
-import { createServerApolloClient } from './createServerApolloClient';
 import { getStatusFromErrors } from './getStatusFromErrors';
 import { createRuntimeDebug } from '../utils/runtimeDebug';
 import { RedirectError, GqlError } from '../utils/apolloClientErrorHandlers';
 import { Reducer } from 'redux';
+import { createServerUrqlClient } from './createServerUrqlClient';
+import { Client, ssrExchange } from 'urql';
 
 const debug = createRuntimeDebug('getSSRMiddleware');
 
 export interface GetSsrAppParams {
-    client: ApolloClient<any>;
+    client: Client;
     resolvedUrl: ResolvedUrl;
     domain: string;
     version: string;
@@ -69,7 +70,7 @@ export function getSSRMiddleware(parameters: {
         beforeBodyEnd,
         getSsrApp,
         knownRoutes,
-        links,
+        // links,
         urlQuery,
         assetPrefix,
         legacyAssetPrefix,
@@ -94,8 +95,8 @@ export function getSSRMiddleware(parameters: {
         const [pathname] = req.url.split('?');
 
         debug('Node is handling a request for', req.url);
-
-        const [client, getErrors] = createServerApolloClient(backend, links, req);
+        const ssrCache = ssrExchange();
+        const [client, getErrors] = createServerUrqlClient(backend, [ssrCache]);
 
         fetchFromKnownOrNetwork(pathname, client, knownRoutes, urlQuery)
             .pipe(
@@ -111,14 +112,15 @@ export function getSSRMiddleware(parameters: {
                     }
 
                     const [App] = getSsrApp({ client, resolvedUrl, domain, version, rawPath: req.url });
-                    return defer(() => renderToStringWithData(App)).pipe(
-                        mergeMap(content => {
+                    return defer(() => ssrPrepass(App)).pipe(
+                        mergeMap(() => {
                             const errors = getErrors();
                             const status = getStatusFromErrors(errors);
 
-                            const initialState = client.extract();
+                            const initialState = ssrCache.extractData();
                             const helmet = Helmet.renderStatic();
                             const assetsForType = getAssetsForType([resolvedUrl.componentName], stats);
+                            const content = ReactDOMServer.renderToString(App);
 
                             debug(`assetsForType=${resolvedUrl.componentName}`, assetsForType);
 
