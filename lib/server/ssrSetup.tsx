@@ -61,7 +61,7 @@ export function getSsrInit(params: CombinedParams) {
     const Cmp = resolveSync(resolvedUrl.componentName);
     const Inner = React.memo(() => {
         return (
-            <div className="opacity-1" data-test-id="SSR">
+            <div className="opacity-1">
                 <Cmp id={resolvedUrl.id} key={pathname} pathname={pathname} />
             </div>
         );
