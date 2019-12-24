@@ -23,7 +23,7 @@ export interface EpicDeps<AppEnv = {}> {
     putJSON(url: string, body?: any, options?: object): Observable<any>;
     deleteJSON(url: string, body?: any, options?: object): Observable<any>;
     getJSON(url: string, options?: object): Observable<any>;
-    apiOptions(baseOptions: object): object;
+    restHeaders(baseOptions: object): object;
     client?: ApolloClient<any>;
     env: AppEnv;
     historyEvents$: Observable<unknown>;

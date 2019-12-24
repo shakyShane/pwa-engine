@@ -34,13 +34,13 @@ export function createBrowserStore<T extends { [index: string]: any }>(parameter
         postJSON,
         putJSON,
         deleteJSON,
-        apiOptions: (incoming = {}) => {
+        restHeaders: (incoming = {}) => {
             const token = store.getState().user.token;
             const outgoing = {
                 Authorization: token ? `Bearer ${token}` : '',
                 ...incoming,
             };
-            debug('apiOptions', outgoing);
+            debug('restHeaders', outgoing);
             return outgoing;
         },
         apiUrl: (operationId: string) => (path, args) => {
