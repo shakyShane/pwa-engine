@@ -17,7 +17,7 @@ export interface EpicDeps<AppEnv = {}> {
         set(key: string, value: any, duration?: number): void;
         remove(key: string): void;
     };
-    apiUrl(operationId: string): (path: string, args?: { [name: string]: any }) => string;
+    apiUrl(operationId: string): (path: string, args?: { [name: string]: any }, fields?: string[]) => string;
     postJSON(url: string, body?: any, options?: object): Observable<any>;
     postJSON(url: string, body?: any, options?: object): Observable<any>;
     putJSON(url: string, body?: any, options?: object): Observable<any>;
