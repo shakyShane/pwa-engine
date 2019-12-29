@@ -1,5 +1,5 @@
 import { compose } from 'redux';
-import { EMPTY, of } from 'rxjs';
+import { EMPTY, of, Subject } from 'rxjs';
 
 import { createStorage, createCookieStorage } from '../storage/effects/createStorage.effect';
 import { EpicDeps, RegisterItem } from '../types';
@@ -7,6 +7,8 @@ import { deleteJSON, getJSON, postJSON, putJSON } from '../utils/ajax';
 import { createRuntimeDebug } from '../utils/runtimeDebug';
 
 import { configureStore } from './store';
+import { appendReferrer, cheapClone, extractReferrer, minDelay } from '../utils/general';
+import { LOCATION_CHANGE, push } from '../router';
 
 const debug = createRuntimeDebug('browser-store.ts');
 
@@ -48,11 +50,14 @@ export function createBrowserStore<T extends { [index: string]: any }>(parameter
             return 'unknown';
         },
         env: process.env as any, // from webpack
-        resolve: (...args) => {
-            console.error(`resolve not implemented`, args);
-            return EMPTY;
-        },
         historyEvents$: EMPTY,
+        error$: new Subject(),
+        cheapClone: cheapClone,
+        minDelay: minDelay,
+        appendReferrer: appendReferrer,
+        extractReferrer: extractReferrer,
+        LOCATION_CHANGE: LOCATION_CHANGE,
+        push,
         ...deps,
     };
 

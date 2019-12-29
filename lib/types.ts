@@ -1,6 +1,8 @@
-import { Observable } from 'rxjs';
+import React from 'react';
+import { Observable, Subject } from 'rxjs';
 import { Action } from 'redux';
 import { ApolloClient } from 'apollo-client';
+import { cheapClone, minDelay, appendReferrer, extractReferrer } from './utils/general';
 
 export type EpicReturn = Observable<Action>;
 
@@ -27,7 +29,13 @@ export interface EpicDeps<AppEnv = {}> {
     client?: ApolloClient<any>;
     env: AppEnv;
     historyEvents$: Observable<unknown>;
-    [index: string]: any;
+    error$: Subject<{ error: Error; info: React.ErrorInfo }>;
+    LOCATION_CHANGE: string;
+    cheapClone: typeof cheapClone;
+    minDelay: typeof minDelay;
+    appendReferrer: typeof appendReferrer;
+    extractReferrer: typeof extractReferrer;
+    push(path: string, state?: any): Action;
 }
 
 export interface RegisterItem {

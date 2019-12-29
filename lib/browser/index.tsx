@@ -16,15 +16,13 @@ import {
     AsyncLoader,
     AsyncRouter,
     historyAsObs,
-    LOCATION_CHANGE,
-    push,
     routerMiddleware,
     routerRegister,
     initialState as initialRouterState,
 } from '../router';
 import { readJson } from '../utils/readJson';
 import { getBrowserApolloClient } from '../utils/getBrowserApolloClient';
-import { cheapClone } from '../utils/cheapClone';
+import { cheapClone } from '../utils/general';
 
 export function init({
     loaderFn,
@@ -90,9 +88,7 @@ export function init({
             },
             error$,
             history,
-            LOCATION_CHANGE: LOCATION_CHANGE,
             historyEvents$,
-            push,
             ...deps,
         },
         initialState: {

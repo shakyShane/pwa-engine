@@ -5,4 +5,4 @@ export { useEpicDeps } from './hooks/useEpicDeps';
 export { GetSsrAppParams } from './server/ssrMiddleware';
 export { RouteData } from './utils/getKnownRoute';
 export { getBrowserApolloClient } from './utils/getBrowserApolloClient';
-export { cheapClone } from './utils/cheapClone';
+export * from './utils/general';
