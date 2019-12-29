@@ -4,8 +4,8 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { filter, mergeMap, pluck, withLatestFrom } from 'rxjs/operators';
 
 import { RegisterItem } from '../types';
-import { createRuntimeDebug } from '../utils/runtimeDebug';
-const debug = createRuntimeDebug('store.ts');
+import { createDebug } from '../utils/runtimeDebug';
+const debug = createDebug('store.ts');
 
 type ConfigureStoreParams<State, EpicDeps> = {
     epics: any[];

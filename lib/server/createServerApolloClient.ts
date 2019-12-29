@@ -3,10 +3,10 @@ import { createHttpLink } from 'apollo-link-http';
 import { defaultDataIdFromObject, InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloLink } from 'apollo-link';
 
-import { createRuntimeDebug } from '../utils/runtimeDebug';
+import { createDebug } from '../utils/runtimeDebug';
 import { getUrlResolverError, getNetworkErrors, GqlErrors } from '../utils/apolloClientErrorHandlers';
 
-const debug = createRuntimeDebug('createServerApolloClient');
+const debug = createDebug('createServerApolloClient');
 
 export function createServerApolloClient(
     backend: string,

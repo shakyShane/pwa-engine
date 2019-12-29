@@ -2,9 +2,9 @@ import { EMPTY, scheduled, asyncScheduler, Observable } from 'rxjs';
 import { filter, mergeMap, pluck, take } from 'rxjs/operators';
 
 import { RuntimeEnv, RuntimeActions, RuntimeMsg, RuntimeState } from '../runtime.register';
-import { createRuntimeDebug } from '../../utils/runtimeDebug';
+import { createDebug } from '../../utils/runtimeDebug';
 
-const debug = createRuntimeDebug('appEnvEpic');
+const debug = createDebug('appEnvEpic');
 
 export function appEnvEpic(_actions, state: Observable<any>, deps: { env: Partial<RuntimeEnv> }) {
     const env = cheapClone(deps.env);

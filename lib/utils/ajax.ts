@@ -2,8 +2,8 @@ import { Observable } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import { pluck } from 'rxjs/operators';
 
-import { createRuntimeDebug } from './runtimeDebug';
-const debug = createRuntimeDebug('ajax.ts');
+import { createDebug } from './runtimeDebug';
+const debug = createDebug('ajax.ts');
 
 export function getJSON<T>(url, headers = {}): Observable<T> {
     debug('GET', url, headers);

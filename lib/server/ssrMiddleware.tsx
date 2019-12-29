@@ -21,11 +21,11 @@ import {
 } from './getCriticalAssets';
 import { createServerApolloClient } from './createServerApolloClient';
 import { getStatusFromErrors } from './getStatusFromErrors';
-import { createRuntimeDebug } from '../utils/runtimeDebug';
+import { createDebug } from '../utils/runtimeDebug';
 import { RedirectError, GqlError } from '../utils/apolloClientErrorHandlers';
 import { Reducer } from 'redux';
 
-const debug = createRuntimeDebug('getSSRMiddleware');
+const debug = createDebug('getSSRMiddleware');
 
 export interface GetSsrAppParams {
     client: ApolloClient<any>;

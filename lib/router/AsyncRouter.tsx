@@ -2,9 +2,9 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { Action, History, Location } from 'history';
 import { BehaviorSubject, noop, Observable, Subject } from 'rxjs';
 import { scan, share } from 'rxjs/operators';
-import { createRuntimeDebug } from '../utils/runtimeDebug';
+import { createDebug } from '../utils/runtimeDebug';
 
-const debug = createRuntimeDebug('AsyncRouter');
+const debug = createDebug('AsyncRouter');
 
 interface AsyncContext {
     pathname: string | null;

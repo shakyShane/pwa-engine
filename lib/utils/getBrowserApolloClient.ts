@@ -1,10 +1,10 @@
 import { ApolloClient } from 'apollo-client';
 import { ApolloLink } from 'apollo-link';
 import { defaultDataIdFromObject, InMemoryCache } from 'apollo-cache-inmemory';
-import { createRuntimeDebug } from './runtimeDebug';
+import { createDebug } from './runtimeDebug';
 import { getUrlResolverError, getNetworkErrors, GqlErrors } from './apolloClientErrorHandlers';
 
-const debug = createRuntimeDebug('getBrowserApolloClient');
+const debug = createDebug('getBrowserApolloClient');
 
 /**
  * @param apiBase

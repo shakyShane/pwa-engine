@@ -2,14 +2,14 @@ import React from 'react';
 import { GetSsrAppParams, SrrParams } from './ssrMiddleware';
 import { initialState, runtimeReducer } from '../runtime';
 import { configureStore } from '../store';
-import { createRuntimeDebug } from '../utils/runtimeDebug';
+import { createDebug } from '../utils/runtimeDebug';
 import { compose } from 'redux';
 import { Provider as ReduxProvider } from 'react-redux';
 import { StaticRouter } from 'react-router';
 import { ApolloProvider } from '@apollo/react-hooks';
 import { RegisterContextProvider } from '../components';
 
-const debug = createRuntimeDebug('getSSRMiddleware');
+const debug = createDebug('getSSRMiddleware');
 
 type CombinedParams = GetSsrAppParams & SrrParams;
 

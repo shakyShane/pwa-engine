@@ -3,9 +3,9 @@ import { ActionMap, createMsg } from 'action-typed';
 import { Middleware } from 'redux';
 
 import { HistoryEvent } from './AsyncRouter';
-import { createRuntimeDebug } from '../utils/runtimeDebug';
+import { createDebug } from '../utils/runtimeDebug';
 
-const debug = createRuntimeDebug('AsyncRouter:register');
+const debug = createDebug('AsyncRouter:register');
 
 export interface RouterState {
     location: Location;

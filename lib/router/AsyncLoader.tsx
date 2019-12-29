@@ -8,9 +8,9 @@ import { useDispatch } from 'react-redux';
 import { AsyncRouterContext, HistoryEvent } from './AsyncRouter';
 import { Msg } from './router.register';
 import { ResolvedComponent } from '../utils/resolve';
-import { createRuntimeDebug } from '../utils/runtimeDebug';
+import { createDebug } from '../utils/runtimeDebug';
 
-const debug = createRuntimeDebug('AsyncRouter:AsyncLoader');
+const debug = createDebug('AsyncRouter:AsyncLoader');
 
 interface AsyncLoaderProps {
     nav$: Observable<HistoryEvent>;

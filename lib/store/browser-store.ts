@@ -4,13 +4,13 @@ import { EMPTY, of, Subject } from 'rxjs';
 import { createStorage, createCookieStorage } from '../storage/effects/createStorage.effect';
 import { EpicDeps, RegisterItem } from '../types';
 import { deleteJSON, getJSON, postJSON, putJSON } from '../utils/ajax';
-import { createRuntimeDebug } from '../utils/runtimeDebug';
+import { createDebug } from '../utils/runtimeDebug';
 
 import { configureStore } from './store';
 import { appendReferrer, cheapClone, extractReferrer, minDelay } from '../utils/general';
 import { LOCATION_CHANGE, push } from '../router';
 
-const debug = createRuntimeDebug('browser-store.ts');
+const debug = createDebug('browser-store.ts');
 
 type BrowserStoreParams<StoreState> = {
     deps?: Partial<EpicDeps>;

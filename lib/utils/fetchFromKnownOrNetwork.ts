@@ -6,9 +6,9 @@ import { urlEntityToComponentName } from './urlEntityToComponentName';
 import { NOTFOUND_CMP, ResolvedUrl } from './resolve';
 import { getKnownRoute, RouteData } from './getKnownRoute';
 import { UrlQueryInput, UrlQueryResult } from '../types';
-import { createRuntimeDebug } from './runtimeDebug';
+import { createDebug } from './runtimeDebug';
 
-const debug = createRuntimeDebug('fetchFromKnownOrNetwork');
+const debug = createDebug('fetchFromKnownOrNetwork');
 
 export interface FetchedData {
     data: { urlResolver: UrlQueryResult };

@@ -6,11 +6,11 @@ import { JSXElementConstructor } from 'react';
 import { convertDataToResolved, FetchedData, fetchFromKnownOrNetwork } from './fetchFromKnownOrNetwork';
 import { getKnownRoute, RouteData } from './getKnownRoute';
 import { UrlQueryInput, UrlQueryResult } from '../types';
-import { createRuntimeDebug } from './runtimeDebug';
+import { createDebug } from './runtimeDebug';
 import { GqlError, RedirectError } from './apolloClientErrorHandlers';
 import { Store } from 'redux';
 
-const debug = createRuntimeDebug(`resolve`);
+const debug = createDebug(`resolve`);
 
 export const NOTFOUND_CMP = 'NotFound';
 export const ERROR_CMP = 'Error';

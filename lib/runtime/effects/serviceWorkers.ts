@@ -3,9 +3,9 @@ import { ignoreElements, share, tap, mergeMap, withLatestFrom } from 'rxjs/opera
 import { Action } from 'redux';
 
 import { RuntimeActions, RuntimeMsg } from '../runtime.register';
-import { createRuntimeDebug } from '../../utils/runtimeDebug';
+import { createDebug } from '../../utils/runtimeDebug';
 
-const debug = createRuntimeDebug(`serviceWorkers.ts`);
+const debug = createDebug(`serviceWorkers.ts`);
 
 /**
  * How often should we check for SW updates?
