@@ -26,7 +26,7 @@ export function renderShell(props: HtmlProps) {
             ${props.criticalCss}
         </style>
         ${props.css
-            .map(x => `<link rel="preload" href="/${x}" as="style" onload="this.onload=null;this.rel='stylesheet'">`)
+            .map(x => `<link rel="preload" href="/${x}" as="style" crossorigin onload="this.onload=null;this.rel='stylesheet'">`)
             .join('')}
         <noscript>
         ${props.css.map(x => `<link href="/${x}" rel="stylesheet" />`).join('')}
@@ -34,7 +34,7 @@ export function renderShell(props: HtmlProps) {
         <script>
         !function(t){"use strict";t.loadCSS||(t.loadCSS=function(){});var e=loadCSS.relpreload={};if(e.support=function(){var e;try{e=t.document.createElement("link").relList.supports("preload")}catch(t){e=!1}return function(){return e}}(),e.bindMediaToggle=function(t){var e=t.media||"all";function n(){t.addEventListener?t.removeEventListener("load",n):t.attachEvent&&t.detachEvent("onload",n),t.setAttribute("onload",null),t.media=e}t.addEventListener?t.addEventListener("load",n):t.attachEvent&&t.attachEvent("onload",n),setTimeout(function(){t.rel="stylesheet",t.media="only x"}),setTimeout(n,3e3)},e.poly=function(){if(!e.support())for(var n=t.document.getElementsByTagName("link"),a=0;a<n.length;a++){var o=n[a];"preload"!==o.rel||"style"!==o.getAttribute("as")||o.getAttribute("data-loadcss")||(o.setAttribute("data-loadcss",!0),e.bindMediaToggle(o))}},!e.support()){e.poly();var n=t.setInterval(e.poly,500);t.addEventListener?t.addEventListener("load",function(){e.poly(),t.clearInterval(n)}):t.attachEvent&&t.attachEvent("onload",function(){e.poly(),t.clearInterval(n)})}"undefined"!=typeof exports?exports.loadCSS=loadCSS:t.loadCSS=loadCSS}("undefined"!=typeof global?global:this)
         </script>
-        ${props.js.map(x => `<link rel="preload" as="script" href="/${x}" />`).join('')}
+        ${props.js.map(x => `<link rel="preload" as="script" crossorigin href="/${x}" />`).join('')}
         <script type="text/javascript">
             /*! modernizr 3.6.0 (Custom Build) | MIT *
              * https://modernizr.com/download/?-flexboxlegacy-setclasses !*/
