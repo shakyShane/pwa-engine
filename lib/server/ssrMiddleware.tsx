@@ -39,6 +39,7 @@ export interface SrrParams {
     resolveSync(componentName: string): any;
     reducers?: { [index: string]: Reducer };
     state?: { [index: string]: any };
+    deps?: { [index: string]: any };
 }
 
 export function getSSRMiddleware(parameters: {

@@ -14,10 +14,10 @@ const debug = createDebug('getSSRMiddleware');
 type CombinedParams = GetSsrAppParams & SrrParams;
 
 export function getSsrInit(params: CombinedParams) {
-    const { client, resolvedUrl, domain, version, rawPath, reducers, state, resolveSync } = params;
+    const { client, resolvedUrl, domain, version, rawPath, reducers, state, resolveSync, deps } = params;
     debug('rendering for %s', rawPath);
 
-    const deps = {
+    const combinedDeps = {
         client: client as any,
         storage: {
             get(_: string): any {
@@ -30,6 +30,7 @@ export function getSsrInit(params: CombinedParams) {
                 return undefined;
             },
         },
+        ...deps,
     };
     const [pathname, search] = rawPath.split(/\?/);
     const [store, register] = configureStore({
@@ -39,7 +40,7 @@ export function getSsrInit(params: CombinedParams) {
             ...reducers,
         },
         epics: [],
-        deps,
+        deps: combinedDeps,
         compose,
         initialState: {
             router: {

@@ -26,7 +26,10 @@ export function renderShell(props: HtmlProps) {
             ${props.criticalCss}
         </style>
         ${props.css
-            .map(x => `<link rel="preload" href="/${x}" as="style" crossorigin onload="this.onload=null;this.rel='stylesheet'">`)
+            .map(
+                x =>
+                    `<link rel="preload" href="/${x}" as="style" crossorigin onload="this.onload=null;this.rel='stylesheet'">`,
+            )
             .join('')}
         <noscript>
         ${props.css.map(x => `<link href="/${x}" rel="stylesheet" />`).join('')}
