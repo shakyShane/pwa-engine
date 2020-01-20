@@ -18,7 +18,6 @@ export function renderShell(props: HtmlProps) {
     return `
 <html lang="en">
     <head>
-        <meta name="robots" content="noindex">
         ${props.link}
         ${props.title}
         ${props.meta}
