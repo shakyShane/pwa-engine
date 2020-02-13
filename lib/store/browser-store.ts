@@ -8,7 +8,7 @@ import { createDebug } from '../utils/runtimeDebug';
 
 import { configureStore } from './store';
 import { appendReferrer, cheapClone, extractReferrer, minDelay } from '../utils/general';
-import { LOCATION_CHANGE, push } from '../router';
+import { LOCATION_CHANGE, push, replace } from '../router';
 
 const debug = createDebug('browser-store.ts');
 
@@ -58,6 +58,7 @@ export function createBrowserStore<T extends { [index: string]: any }>(parameter
         extractReferrer: extractReferrer,
         LOCATION_CHANGE: LOCATION_CHANGE,
         push,
+        replace,
         ...deps,
     };
 

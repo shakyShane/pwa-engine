@@ -36,6 +36,7 @@ export interface EpicDeps<AppEnv = {}> {
     appendReferrer: typeof appendReferrer;
     extractReferrer: typeof extractReferrer;
     push(path: string, state?: any): Action;
+    replace(path: string, state?: any): Action;
 }
 
 export interface RegisterItem {
