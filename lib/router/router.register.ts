@@ -60,6 +60,13 @@ export function push(path: string, state?: any) {
     });
 }
 
+export function replace(path: string, state?: any) {
+    return RouterMsg('AsyncRouter.@@INTERNAL', {
+        method: 'replace',
+        args: [path, state],
+    });
+}
+
 export const Msg = createMsg<Messages>();
 export const RouterMsg = Msg;
 export type TypeMap = ActionMap<Messages>;

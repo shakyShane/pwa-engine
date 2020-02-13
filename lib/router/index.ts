@@ -8,6 +8,7 @@ export {
     routerRegister,
     RouterState,
     push,
+    replace,
     LOCATION_CHANGE,
     routerMiddleware,
     initialState,
