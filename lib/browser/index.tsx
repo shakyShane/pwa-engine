@@ -1,5 +1,4 @@
 import React from 'react';
-import { createHttpLink } from 'apollo-link-http';
 import { initialState as initialRuntimeState } from '../runtime';
 import { getRuntimeState, resolve, resolveWeak } from '../utils/resolve';
 import { concat, of, Subject } from 'rxjs';
@@ -36,14 +35,7 @@ export function init({
     knownRoutes,
     apiUrl,
 }) {
-    const apiBase = location.origin + '/graphql';
-
-    const httpLink = createHttpLink({
-        uri: apiBase,
-        useGETForQueries: typeof window.Cypress === 'undefined',
-    });
-
-    const [apolloClient, errors] = getBrowserApolloClient([...links, httpLink], readJson('apollo-client-state'));
+    const [apolloClient, errors] = getBrowserApolloClient(links, readJson('apollo-client-state'));
 
     const resolveLocal = resolve(
         {
